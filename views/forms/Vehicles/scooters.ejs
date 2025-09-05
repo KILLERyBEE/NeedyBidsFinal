@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Needybids - Scooter Listing</title>
+    <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+        rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/header-all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', sans-serif;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            max-width: 65%;
+            margin: 10px auto;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.323);
+            border-radius: 14px;
+        }
+
+        .heading {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            text-align: center;
+            padding: 24px 20px 16px 20px;
+            width: 100%;
+            border-radius: 14px 14px 0 0;
+
+        }
+
+        .heading h1 {
+            font-size: 1.625rem;
+            margin: 0;
+        }
+
+        .heading p {
+            font-size: 0.9rem;
+            margin: 4px 0 0 0;
+            border-bottom: 1px solid gray;
+            padding-bottom: 16px;
+        }
+
+        .form-section {
+            background-color: white;
+            padding: 6px 24px;
+            border-radius: 5px;
+        }
+
+        .form-section h2,
+        .image-upload-header {
+            margin-top: 10px;
+            font-size: 1.125rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-col {
+            padding: 0 10px;
+            margin-bottom: 18px;
+            width: 100%;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .radio-group-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-block: 14px;
+        }
+
+        .form-group .radio-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group .radio-group label {
+            margin: 0 0 0 5px;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .form-group .radio-group input[type="radio"] {
+            margin: 0;
+        }
+
+        /* Image Upload Styles */
+        .image-upload-header {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+        }
+
+        .image-upload-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .image-upload-counter {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .upload-container {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .upload-slot {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #fafafa;
+        }
+
+        .upload-slot:hover {
+            border-color: #007bff;
+            background: #f0f8ff;
+        }
+
+        .upload-slot.filled {
+            border: 2px solid #28a745;
+            background: white;
+            padding: 0;
+        }
+
+        .upload-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .camera-icon {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .upload-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 18px;
+            height: 18px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-section {
+            margin-top: 15px;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .preview-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .preview-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .preview-info {
+            flex: 1;
+        }
+
+        .preview-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .preview-size {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .remove-preview-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .submit-btn {
+            background-color: #02511A;
+            color: white;
+            border: none;
+            padding: 10px 40px;
+            margin-block: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #02511ac5;
+        }
+
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .container {
+                width: 80%;
+                max-width: 80%;
+            }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 767px) {
+            .container {
+                width: 98%;
+                max-width: 98%;
+                border-radius: 14px;
+                margin-inline: 5px;
+            }
+
+            .heading {
+                border-radius: 0px;
+                text-align: center;
+                padding-inline: 20px;
+            }
+
+            .form-section {
+                background-color: white;
+                padding: 6px 16px;
+                border-radius: 5px;
+            }
+
+            .heading h1 {
+                font-size: 1.125rem;
+                margin: 0;
+                border-radius: 8px;
+            }
+
+
+            .upload-slot {
+                width: 30%;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .form-col {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            .full-width {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<%- include('../../header-all') %>
+    <form action="/scooters/submit" method="POST" enctype="multipart/form-data">
+        <div class="container">
+            <div class="heading">
+                <h1>SCOOTER LISTING REQUEST FORM</h1>
+                <p>Submit Your Details - Quick, Easy & Hassle-Free!</p>
+            </div>
+
+            <div class="form-section">
+                <h2>Seller Information</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="sellerName">Name</label>
+                            <input type="text" id="sellerName" name="sellerName" placeholder="Enter your name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="contactNumber">Contact Number</label>
+                            <input type="tel" id="contactNumber" name="contactNumber" placeholder="Enter phone number"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="Enter email address" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="pincode">PIN Code</label>
+                            <input type="text" id="pincode" name="pincode" placeholder="Enter 6-digit PIN code"
+                                maxlength="6" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" placeholder="City" readonly>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" id="state" name="state" placeholder="State" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Auction Preferences</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-col">
+    <div class="form-group">
+        <label for="auctionType">Type of Auction</label>
+        <select id="auctionType" name="auctionType" required onchange="toggleBasePrice()">
+            <option value="">Select Auction Type</option>
+            <option value="No Reserve">No Reserve</option>
+            <option value="Reserve">Reserve</option>
+        </select>
+    </div>
+</div>
+<div class="form-col" id="basePriceContainer" style="display: none;">
+    <div class="form-group">
+        <label for="basePrice">What reserve price would you like ?</label>
+        <input type="number" id="basePrice" name="basePrice" placeholder="Enter base price">
+    </div>
+</div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="auctionDuration">Auction Time Duration</label>
+                            <select id="auctionDuration" name="auctionDuration" required>
+                                <option value="">Select Duration</option>
+                                <option value="1 day">1 day</option>
+                                <option value="3 days">3 days</option>
+                                <option value="7 days">7 days</option>
+                                <option value="15 days">15 days</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Scooter Details</h2>
+                <div class="form-row">
+                    <div class="form-col full-width">
+                        <div class="form-group">
+                            <label for="adTitle">Ad Title</label>
+                            <input type="text" id="adTitle" name="adTitle" placeholder="e.g., Honda Activa 6G 2022"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="brand">Brand</label>
+                            <select id="brand" name="brand" required>
+                                <option value="">Select Brand</option>
+                                <option value="Honda">Honda</option>
+                                <option value="TVS">TVS</option>
+                                <option value="Suzuki">Suzuki</option>
+                                <option value="Hero">Hero</option>
+                                <option value="Yamaha">Yamaha</option>
+                                <option value="Vespa">Vespa</option>
+                                <option value="Aprilia">Aprilia</option>
+                                <option value="Bajaj">Bajaj</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="model">Model</label>
+                            <input type="text" id="model" name="model" placeholder="Enter scooter model" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="year">Year of Manufacture</label>
+                            <select id="year" name="year" required>
+                                <option value="">Select Year</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                                <option value="2009">2009</option>
+                                <option value="2008">2008</option>
+                                <option value="2007">2007</option>
+                                <option value="2006">2006</option>
+                                <option value="2005">2005</option>
+                                <option value="2004">2004</option>
+                                <option value="2003">2003</option>
+                                <option value="2002">2002</option>
+                                <option value="2001">2001</option>
+                                <option value="2000">2000</option>
+                                <option value="1999">1999</option>
+                                <option value="1998">1998</option>
+                                <option value="1997">1997</option>
+                                <option value="1996">1996</option>
+                                <option value="1995">1995</option>
+                                <option value="1994">1994</option>
+                                <option value="1993">1993</option>
+                                <option value="1992">1992</option>
+                                <option value="1991">1991</option>
+                                <option value="1990">1990</option>
+                                <option value="1989">1989</option>
+                                <option value="1988">1988</option>
+                                <option value="1987">1987</option>
+                                <option value="1986">1986</option>
+                                <option value="1985">1985</option>
+                                <option value="1984">1984</option>
+                                <option value="1983">1983</option>
+                                <option value="1982">1982</option>
+                                <option value="1981">1981</option>
+                                <option value="1980">1980</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="kmDriven">KM Driven</label>
+                            <input type="number" id="kmDriven" name="kmDriven" placeholder="Enter kilometers driven"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="fuelType">Fuel Type</label>
+                            <select id="fuelType" name="fuelType" required>
+                                <option value="">Select Fuel Type</option>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Electric">Electric</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="owners">Number of Owners</label>
+                            <select id="owners" name="owners" required>
+                                <option value="">Select Owners</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4+">4+</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="condition">Condition</label>
+                            <select id="condition" name="condition" required>
+                                <option value="">Select Condition</option>
+                                <option value="New">New</option>
+                                <option value="Used">Used</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col full-width">
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" rows="5"
+                                placeholder="Extra features, recent service, etc." required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="image-upload-header">
+                    <div class="image-upload-title">UPLOAD UP TO 5 PHOTOS</div>
+                    <div class="image-upload-counter">
+                        Selected: <span id="counter">0</span>/5 images
+                    </div>
+                </div>
+
+                <div class="upload-container">
+                    <div class="upload-slot" onclick="openFileDialog()">
+                        <svg class="camera-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <div class="upload-text">Add Photo</div>
+                    </div>
+                    <div class="upload-slot" onclick="openFileDialog()">
+                        <svg class="camera-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <div class="upload-text">Add Photo</div>
+                    </div>
+                    <div class="upload-slot" onclick="openFileDialog()">
+                        <svg class="camera-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <div class="upload-text">Add Photo</div>
+                    </div>
+                    <div class="upload-slot" onclick="openFileDialog()">
+                        <svg class="camera-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <div class="upload-text">Add Photo</div>
+                    </div>
+                    <div class="upload-slot" onclick="openFileDialog()">
+                        <svg class="camera-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <div class="upload-text">Add Photo</div>
+                    </div>
+                </div>
+
+                <input type="file" id="fileInput" class="file-input" multiple accept="image/*" name="scooterPhotos">
+
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <div class="preview-title">Image Previews</div>
+                    <div id="previewList"></div>
+                </div>
+
+                <div id="successMsg" class="success-msg" style="display: none;">
+                    ✓ Maximum number of images uploaded (5/5)
+                </div>
+
+                <button type="submit" class="submit-btn">Submit</button>
+            </div>
+        </div>
+    </form>
+<script src="/js/header-all.js"></script>
+    <script>
+              
+function toggleBasePrice() {
+    const auctionType = document.getElementById('auctionType').value;
+    const basePriceContainer = document.getElementById('basePriceContainer');
+    const basePriceInput = document.getElementById('basePrice');
+    
+    if (auctionType === 'Reserve') {
+        basePriceContainer.style.display = 'block';
+        basePriceInput.required = true;
+        basePriceInput.value = '';
+    } else {
+        basePriceContainer.style.display = 'none';
+        basePriceInput.required = false;
+        basePriceInput.value = '0';
+    }
+}
+
+        let selectedImages = [];
+        const maxImages = 5;
+
+        function openFileDialog() {
+            if (selectedImages.length < maxImages) {
+                document.getElementById('fileInput').click();
+            }
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function (e) {
+            const files = Array.from(e.target.files);
+            const remainingSlots = maxImages - selectedImages.length;
+            const filesToAdd = files.slice(0, remainingSlots);
+
+            filesToAdd.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const imageData = {
+                            id: Date.now() + Math.random(),
+                            file: file,
+                            url: event.target.result,
+                            name: file.name,
+                            size: file.size
+                        };
+                        selectedImages.push(imageData);
+                        updateDisplay();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Reset file input
+            e.target.value = '';
+        });
+
+        function removeImage(id) {
+            selectedImages = selectedImages.filter(img => img.id !== id);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const slots = document.querySelectorAll('.upload-slot');
+            const counter = document.getElementById('counter');
+            const previewSection = document.getElementById('previewSection');
+            const previewList = document.getElementById('previewList');
+            const successMsg = document.getElementById('successMsg');
+
+            // Update counter
+            counter.textContent = selectedImages.length;
+
+            // Reset all slots
+            slots.forEach((slot, index) => {
+                slot.classList.remove('filled');
+                slot.innerHTML = `
+                    <svg class="camera-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                    </svg>
+                    <div class="upload-text">${index === 0 ? 'Add Photo' : ''}</div>
+                `;
+                slot.onclick = openFileDialog;
+            });
+
+            // Fill slots with images
+            selectedImages.forEach((image, index) => {
+                if (index < 5) {
+                    slots[index].classList.add('filled');
+                    slots[index].innerHTML = `
+                        <img src="${image.url}" alt="${image.name}">
+                        <button class="remove-btn" onclick="removeImage(${image.id})">×</button>
+                    `;
+                    slots[index].onclick = null;
+                }
+            });
+
+            // Update preview section
+            if (selectedImages.length > 0) {
+                previewSection.style.display = 'block';
+                previewList.innerHTML = selectedImages.map(image => `
+                    <div class="preview-item">
+                        <img src="${image.url}" alt="${image.name}" class="preview-img">
+                        <div class="preview-info">
+                            <div class="preview-name">${image.name}</div>
+                            <div class="preview-size">${(image.size / 1024 / 1024).toFixed(2)} MB</div>
+                        </div>
+                        <button class="remove-preview-btn" onclick="removeImage(${image.id})">Remove</button>
+                    </div>
+                `).join('');
+            } else {
+                previewSection.style.display = 'none';
+            }
+
+            // Show success message
+            if (selectedImages.length === maxImages) {
+                successMsg.style.display = 'block';
+            } else {
+                successMsg.style.display = 'none';
+            }
+        }
+
+        // Pincode to City/State API
+        document.getElementById("pincode").addEventListener("input", function () {
+            let pincode = this.value.trim();
+            if (pincode.length === 6) {
+                fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data[0].Status === "Success") {
+                            let postOffice = data[0].PostOffice[0];
+                            document.getElementById("city").value = postOffice.Name; // City
+                            document.getElementById("state").value = postOffice.State;   // State
+                        } else {
+                            document.getElementById("city").value = "Invalid Pincode";
+                            document.getElementById("state").value = "";
+                        }
+                    })
+                    .catch(err => console.error(err));
+            } else if (pincode.length === 0) {
+                document.getElementById("city").value = "";
+                document.getElementById("state").value = "";
+            }
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = this;
+            let isValid = true;
+            // Validate required fields
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (!field.value.trim() && field.type !== 'file') {
+                    field.style.borderColor = 'red';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#ccc';
+                }
+            });
+            // Special validation for file upload
+            if (selectedImages.length !== 5) {
+                showInPageAlert('Please upload exactly 5 photos of the scooter.');
+                isValid = false;
+            }
+            // Validate pincode
+            const pincode = document.getElementById('pincode').value.trim();
+            if (pincode.length !== 6) {
+                showInPageAlert('Please enter a valid 6-digit PIN code');
+                isValid = false;
+            }
+            if (!isValid) return;
+            // Build FormData
+            const formData = new FormData();
+            Array.from(form.elements).forEach(el => {
+                if (el.name && el.type !== 'file' && el.type !== 'submit') {
+                    formData.append(el.name, el.value);
+                }
+            });
+            selectedImages.forEach(img => {
+                formData.append('scootersPhotos', img.file);
+            });
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(async response => {
+                if (response.ok) {
+                    showInPageAlert('Form submitted successfully!');
+                    window.location.reload();
+                } else {
+                    const data = await response.json();
+                    showInPageAlert(data.error || 'Submission failed');
+                }
+            })
+            .catch(err => {
+                showInPageAlert('Submission failed: ' + err.message);
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,88 @@
+<style>
+#popupOverlay {
+  z-index: 2000 !important;
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+}
+#popupOverlay.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#sidebarOverlay {
+  z-index: 1000 !important;
+}
+</style>
+<!-- Header Partial: Only header and related popups/sidebar, no <html>, <head>, <body>, or <style> tags -->
+<header>
+  <div class="header-container">
+    <div class="header-left">
+  <i class="fas fa-bars" style="font-size:22px;margin-right:15px;cursor:pointer;"></i>
+      <div class="logo-container">
+  <img src="/Photos/logo.jpg" alt="Logo" onclick="window.location.href='/'">
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="location-search">
+        <div class="location-btn1" id="locationBtn1">
+          <i class="fa-solid fa-location-dot location-icon"></i>
+          <div class="location-text">
+            <span class="location-main" id="locationMain">Choose location</span>
+            <span class="location-sub" id="locationSub">Click to set</span>
+          </div>
+        </div>
+        <div class="searchbox">
+          <i class="fa fa-search"></i>
+          <input type="text" placeholder="Search for Mobiles, Cars and more">
+        </div>
+      </div>
+      <div class="auth-actions" id="authBlock"></div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Search Row -->
+<div class="mobile-search-row">
+  <div class="mobile-search-container">
+    <div class="mobile-searchbox">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search for Mobiles, Cars and more">
+    </div>
+  <div class="mobile-location-btn" id="mobileLocationBtn">
+      <i class="fa-solid fa-location-dot mobile-location-icon"></i>
+      <div class="mobile-location-text">
+  <span class="mobile-location-main" id="mobileLocationMain">Choose location</span>
+  <span class="mobile-location-sub" id="mobileLocationSub">Click to set</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOCATION POPUP -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup">
+    <h2>Choose Your Location</h2>
+    <div class="input-group">
+      <label>Enter Pincode</label>
+      <input type="text" id="pincodeInput" maxlength="6" placeholder="e.g. 400701">
+    </div>
+    <button class="btn-primary" onclick="setPincode()"><i class="fa-solid fa-check"></i> Apply Pincode</button>
+    <div style="margin:15px 0;color:#777;">OR</div>
+    <button class="btn-secondary" onclick="useCurrentLocation()"><i class="fa-solid fa-location-crosshairs"></i> Use My Current Location</button>
+    <div class="error-message" id="errorMessage"></div>
+    <div class="success-message" id="successMessage"></div>
+    <div class="loading" id="loadingMessage">Getting your location...</div>
+    <div style="margin-top:15px;"><button class="btn-secondary" onclick="closePopup()">Cancel</button></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay">
+  <div class="sidebar-container">
+    <i class="fas fa-times sidebar-close" id="sidebarClose"></i>
+    <div id="sidebarContent"></div>
+  </div>
+</div>
+

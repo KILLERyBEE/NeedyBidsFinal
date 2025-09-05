@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+        rel="stylesheet">
+    <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/header-all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="icon" href="images/favicon-32x32.jpeg" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        #photo{
+            max-width: 1200px;
+        }
+        .team-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 40px;
+            min-height: 60vh;
+            text-align: left;
+            padding: 60px 0;
+        }
+
+        .team-h1 {
+            font-size: clamp(2.5rem, 3vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            color: #000000;
+        }
+
+        .team-p {
+            font-size: 1.25rem;
+            color: #555;
+            max-width: 90%;
+        }
+
+        .right-team-content img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .team-block {
+            background-color: #E6EEE9;
+            text-align: center;
+            padding: 50px 20px;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+
+        .team-block h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .team-block p {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: #444;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .team-block hr {
+            border: 5px solid #FF8C00;
+            border-radius: 5px;
+            width: 170px;
+            margin: 0 auto;
+        }
+
+        .photos {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            gap: 30px;
+        }
+
+        .cards {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            border-radius: 14px;
+            background-color: white;
+            width: 280px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cards:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .cards img {
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            border: 4px solid #E6EEE9;
+        }
+
+        .cards h3 {
+            margin-top: 20px;
+            margin-bottom: 0;
+            font-size: 1.4rem;
+            color: #000000;
+        }
+
+        .cards p {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 900px) {
+            .photos {
+                padding-inline: 0;
+            }
+        }
+
+        @media (max-width: 799px) {
+            .team-content {
+                display: flex;
+                flex-direction: column-reverse;
+                align-items: center;
+                justify-content: center;
+                gap: 30px;
+                text-align: center;
+                padding: 40px 0;
+            }
+
+            .team-p {
+                max-width: 100%;
+                padding: 0 10px;
+            }
+
+            .right-team-content img {
+                max-width: 100%;
+            }
+
+            .team-block h2 {
+                font-size: 2rem;
+            }
+
+            .team-block p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('header-all') %>
+        <main>
+            <div class="container">
+                <div class="team-content">
+                    <div class="left-team-content">
+                        <div class="team-h1">We are<br> Needybids.</div>
+                        <div class="team-p">We've built this with real use in mind. From bidding to selling, every
+                            feature is
+                            refined for ease and trust. Enjoy transparent pricing, and real-time updates —
+                            all designed to make Needybids. your go-to platform for smooth, secure item transactions.
+                        </div>
+                    </div>
+                    <div class="right-team-content">
+                        <img src="/Photos/team/team bg.png" alt="team illustration">
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-block">
+                <h2>Our people</h2>
+                <p>This is our team, driven minds behind seamless car auctions.</p>
+                <hr>
+            </div>
+            <div class="container" id="photo">
+                <div class="photos">
+                    <div class="cards">
+                        <img src="/Photos/team/avdhut.jpg" alt="Avdhut Madhvi">
+                        <h3>Avdhut Madhvi</h3>
+                        <p>Backend Lead</p>
+                    </div>
+                    <div class="cards">
+                        <img src="/Photos/team/atharva.jpg" alt="Atharva Ajagekar">
+                        <h3>Atharva Ajagekar</h3>
+                        <p>Frontend Lead</p>
+                    </div>
+                    <div class="cards">
+                        <img src="/Photos/team/sneha.jpg" alt="Sneha Sagale">
+                        <h3>Sneha Sagale</h3>
+                        <p>Backend Lead</p>
+                    </div>
+                    <div class="cards">
+                        <img src="/Photos/team/bhakti.png" alt="Bhakti Bhate">
+                        <h3>Bhakti Bhate</h3>
+                        <p>Frontend Lead</p>
+                    </div>
+
+                    <div class="cards">
+                        <img src="/Photos/team/sakshi.jpg" alt="Sakshi Jadhav">
+                        <h3>Sakshi Jadhav</h3>
+                        <p>Frontend Lead</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <%- include('footer') %>
+            <script src="/js/header-all.js"></script>
+            <script>
+                // Configuration and state management
+                const AppState = {
+                    isLoggedIn: true,
+                    elements: {}
+                };
+
+                // DOM Element Cache for better performance
+                const ElementCache = {
+                    init() {
+                        this.cache = {
+                            profilePic: document.getElementById("profilePic"),
+                            sidebarProfile: document.getElementById("sidebarProfile"),
+                            sidebarLogout: document.getElementById("sidebarLogout"),
+                            notificationIcon: document.getElementById("notificationIcon"),
+                            notificationIconMobile: document.getElementById("notificationIconMobile"),
+                            signInBtn: document.getElementById("signInBtn"),
+                            signInBtnMobile: document.getElementById("signInBtnMobile"),
+                            sidebar: document.getElementById("sidebar"),
+                            searchOverlay: document.getElementById("searchOverlay")
+                        };
+                        return this.cache;
+                    },
+
+                    get(elementId) {
+                        return this.cache[elementId];
+                    }
+                };
+
+                // UI Controller for better organization
+                const UIController = {
+                    init() {
+                        this.elements = ElementCache.init();
+                        this.updateUIBasedOnLoginState();
+
+                        // Add event listeners
+                        if (this.elements.signInBtn) {
+                            this.elements.signInBtn.addEventListener('click', () => {
+                                AppState.isLoggedIn = true;
+                                this.updateUIBasedOnLoginState();
+                            });
+                        }
+
+                        if (this.elements.signInBtnMobile) {
+                            this.elements.signInBtnMobile.addEventListener('click', () => {
+                                AppState.isLoggedIn = true;
+                                this.updateUIBasedOnLoginState();
+                            });
+                        }
+
+                        if (this.elements.sidebarLogout) {
+                            this.elements.sidebarLogout.addEventListener('click', () => {
+                                AppState.isLoggedIn = false;
+                                this.updateUIBasedOnLoginState();
+                                this.toggleSidebar();
+                            });
+                        }
+                    },
+
+                    updateUIBasedOnLoginState() {
+                        const { isLoggedIn } = AppState;
+                        const elementsToShow = isLoggedIn
+                            ? ['profilePic', 'sidebarProfile', 'sidebarLogout', 'notificationIcon', 'notificationIconMobile']
+                            : ['signInBtn', 'signInBtnMobile'];
+
+                        const elementsToHide = isLoggedIn
+                            ? ['signInBtn', 'signInBtnMobile']
+                            : ['profilePic', 'sidebarProfile', 'sidebarLogout', 'notificationIcon', 'notificationIconMobile'];
+
+                        elementsToShow.forEach(id => {
+                            const element = this.elements[id];
+                            if (element) {
+                                element.classList.remove('hidden');
+                            }
+                        });
+
+                        elementsToHide.forEach(id => {
+                            const element = this.elements[id];
+                            if (element) {
+                                element.classList.add('hidden');
+                            }
+                        });
+                    },
+
+                    toggleSidebar() {
+                        const sidebar = this.elements.sidebar;
+                        if (sidebar) {
+                            sidebar.classList.toggle("active");
+
+                            if (sidebar.classList.contains("active")) {
+                                document.body.style.overflow = "hidden";
+                            } else {
+                                document.body.style.overflow = "";
+                            }
+                        }
+                    },
+
+                    toggleSearch() {
+                        const searchOverlay = this.elements.searchOverlay;
+                        if (searchOverlay) {
+                            searchOverlay.classList.toggle("active");
+
+                            if (searchOverlay.classList.contains("active")) {
+                                const input = searchOverlay.querySelector('input');
+                                if (input) input.focus();
+                            }
+                        }
+                    }
+                };
+
+                // Event Listeners
+                const EventManager = {
+                    init() {
+                        this.attachEventListeners();
+                    },
+
+                    attachEventListeners() {
+                        // Close sidebar when clicking outside
+                        document.addEventListener('click', (e) => {
+                            const sidebar = ElementCache.get('sidebar');
+                            const hamburgers = document.querySelectorAll('.hamburger');
+
+                            if (sidebar && sidebar.classList.contains('active')) {
+                                const isClickInsideSidebar = sidebar.contains(e.target);
+                                const isHamburgerClick = Array.from(hamburgers).some(h => h.contains(e.target));
+
+                                if (!isClickInsideSidebar && !isHamburgerClick) {
+                                    UIController.toggleSidebar();
+                                }
+                            }
+                        });
+
+                        // Escape key handlers
+                        document.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape') {
+                                const sidebar = ElementCache.get('sidebar');
+                                const searchOverlay = ElementCache.get('searchOverlay');
+
+                                if (sidebar?.classList.contains('active')) {
+                                    UIController.toggleSidebar();
+                                }
+                                if (searchOverlay?.classList.contains('active')) {
+                                    UIController.toggleSearch();
+                                }
+                            }
+                        });
+                    }
+                };
+
+                // Application initialization
+                const App = {
+                    init() {
+                        UIController.init();
+                        EventManager.init();
+                    }
+                };
+
+                // Initialize app when DOM is loaded
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => App.init());
+                } else {
+                    App.init();
+                }
+
+                // Expose necessary functions globally for inline event handlers
+                window.UIController = UIController;
+            </script>
+</body>
+
+</html>

@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeedyBids - Auctions</title>
+    <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+    <!-- Header resources -->
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/auction.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Filter active state styles - removed green highlight */
+        .filter-group.filter-active .filter-header {
+            background-color: inherit;
+            border-left: none;
+        }
+        .filter-group.filter-active .filter-header i {
+            color: inherit;
+        }
+        /* Filter count badge */
+        .filter-count-badge {
+            background-color: #2563eb;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <%- include('header', { user: locals.user, isAuthenticated: locals.isAuthenticated }) %>
+        <!-- Responsive filter drawer for mobile/tablet -->
+        <div class="filter-drawer-overlay" id="filterDrawerOverlay"></div>
+        <aside class="filter-drawer" id="filterDrawer">
+            <div class="filter-drawer-header">
+                <h2>Filters & Sort</h2>
+                <button class="filter-drawer-close" id="closeFilterDrawer" aria-label="Close">&times;</button>
+            </div>
+            <div class="filter-drawer-content">
+                <div id="drawerFilterSidebar"></div>
+            </div>
+        </aside>
+        <div class="drawer-bottom-btns" id="drawerBottomBtns" style="display:none">
+            <button type="button">Apply</button>
+            <button type="button">Reset</button>
+        </div>
+
+        <div class="container">
+            <!-- Featured Section -->
+            <div class="featured-section"></div>
+
+            <!-- Header with Title and Tabs -->
+            <div class="auctions-header">
+                <h1 class="auctions-title">Auctions</h1>
+                <button class="filter-drawer-btn" id="openFilterDrawer" type="button">
+                    <i class="fa-solid fa-sliders"></i> Filters
+                </button>
+            </div>
+
+            <!-- Main Content with Filters and Items -->
+            <div class="main-content">
+                <!-- Filter Sidebar -->
+                <div class="filter-sidebar" id="mainFilterSidebar">
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const openDrawerBtn = document.getElementById('openFilterDrawer');
+                            const filterDrawer = document.getElementById('filterDrawer');
+                            const filterDrawerOverlay = document.getElementById('filterDrawerOverlay');
+                            const closeDrawerBtn = document.getElementById('closeFilterDrawer');
+                            const drawerFilterSidebar = document.getElementById('drawerFilterSidebar');
+                            const mainFilterSidebar = document.getElementById('mainFilterSidebar');
+                            const drawerBottomBtns = document.getElementById('drawerBottomBtns');
+
+                            function openDrawer() {
+                                filterDrawer.classList.add('active');
+                                filterDrawerOverlay.classList.add('active');
+                                drawerBottomBtns.style.display = 'flex';
+                                // Copy sidebar content into drawer
+                                if (mainFilterSidebar && drawerFilterSidebar) {
+                                    drawerFilterSidebar.innerHTML = mainFilterSidebar.innerHTML;
+                                }
+                            }
+                            function closeDrawer() {
+                                filterDrawer.classList.remove('active');
+                                filterDrawerOverlay.classList.remove('active');
+                                drawerBottomBtns.style.display = 'none';
+                            }
+                            if (openDrawerBtn) openDrawerBtn.addEventListener('click', openDrawer);
+                            if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
+                            if (filterDrawerOverlay) filterDrawerOverlay.addEventListener('click', closeDrawer);
+
+                            // Prevent scroll when drawer is open
+                            const observer = new MutationObserver(() => {
+                                if (filterDrawer.classList.contains('active')) {
+                                    document.body.style.overflow = 'hidden';
+                                } else {
+                                    document.body.style.overflow = '';
+                                }
+                            });
+                            observer.observe(filterDrawer, { attributes: true, attributeFilter: ['class'] });
+                        });
+                    </script>
+
+
+                    <!-- Sort By Filter -->
+                    <div class="filter-title">
+                        Filters
+                        <a href="#" class="load-btn" onclick="clearAllFilters()">Clear All</a>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-header" onclick="toggleFilter('sort-by')">
+                            Sort By
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="filter-content" id="sort-by-content">
+                            <div class="radio-option">
+                                <input type="radio" id="newly-listed" name="sort-by" value="newly-listed" checked>
+                                <label for="newly-listed">Newly Listed</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="ending-soon" name="sort-by" value="ending-soon">
+                                <label for="ending-soon">Ending Soon</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auction Type Filter -->
+                    <div class="filter-group">
+                        <div class="filter-header" onclick="toggleFilter('auction-type')">
+                            Auction Type
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="filter-content" id="auction-type-content">
+                            <div class="radio-option">
+                                <input type="radio" id="reserve" name="auction-type" value="reserve">
+                                <label for="reserve">Reserve</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="no-reserve" name="auction-type" value="no-reserve">
+                                <label for="no-reserve">No Reserve</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="filter-group" style="border-bottom: 1px solid #e5e7eb;">
+                        <div class="filter-header" onclick="toggleFilter('category')"
+                            style="border-bottom: 1px solid #e5e7eb;">
+                            Category
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="filter-content" id="category-content">
+                            <!-- Vehicles -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('vehicles')">
+                                    Vehicles
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="vehicles-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="cars" name="subcategory" value="cars">
+                                        <label for="cars">Cars</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="bikes" name="subcategory" value="bikes">
+                                        <label for="bikes">Bikes</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="scooters" name="subcategory" value="scooters">
+                                        <label for="scooters">Scooters</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="bicycles" name="subcategory" value="bicycles">
+                                        <label for="bicycles">Bicycles</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="commercial" name="subcategory" value="commercial">
+                                        <label for="commercial">Commercial Vehicles</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Property -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('property')">
+                                    Property
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="property-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="homes" name="subcategory" value="homes">
+                                        <label for="homes">Homes & Apartments</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="lands" name="subcategory" value="lands">
+                                        <label for="lands">Lands & Plots</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="shops" name="subcategory" value="shops">
+                                        <label for="shops">Shops</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="office" name="subcategory" value="office">
+                                        <label for="office">Office</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Electronics & Appliances -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('electronics')">
+                                    Electronics & Appliances
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="electronics-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="tv_audio" name="subcategory" value="tv_audio">
+                                        <label for="tv_audio">TV & Audio</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="kitchen" name="subcategory" value="kitchen">
+                                        <label for="kitchen">Kitchen Appliances</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="computers" name="subcategory" value="computers">
+                                        <label for="computers">Computers & Laptops</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="cameras" name="subcategory" value="cameras">
+                                        <label for="cameras">Cameras & Lenses</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="games" name="subcategory" value="games">
+                                        <label for="games">Games & Entertainment</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="fridges" name="subcategory" value="fridges">
+                                        <label for="fridges">Fridges</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="ac" name="subcategory" value="ac">
+                                        <label for="ac">Air Conditioners</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="washing" name="subcategory" value="washing">
+                                        <label for="washing">Washing Machines</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="computer_acc" name="subcategory"
+                                            value="computer_acc">
+                                        <label for="computer_acc">Computer Accessories</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mobiles -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('mobiles')">
+                                    Mobiles
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="mobiles-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="mobile_phones" name="subcategory"
+                                            value="mobile_phones">
+                                        <label for="mobile_phones">Mobile Phones</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="tablets" name="subcategory" value="tablets">
+                                        <label for="tablets">Tablets</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="mobile_acc" name="subcategory" value="mobile_acc">
+                                        <label for="mobile_acc">Mobile Accessories</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Furniture -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('furniture')">
+                                    Furniture
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="furniture-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="sofa_dining" name="subcategory" value="sofa_dining">
+                                        <label for="sofa_dining">Sofa & Dining</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="beds" name="subcategory" value="beds">
+                                        <label for="beds">Beds & Wardrobes</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="home_decor" name="subcategory" value="home_decor">
+                                        <label for="home_decor">Home Decor & Garden</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="kids_furniture" name="subcategory"
+                                            value="kids_furniture">
+                                        <label for="kids_furniture">Kids Furniture</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="household" name="subcategory" value="household">
+                                        <label for="household">Other Household Items</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fashion -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('fashion')">
+                                    Fashion
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="fashion-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="men" name="subcategory" value="men">
+                                        <label for="men">Men</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="women" name="subcategory" value="women">
+                                        <label for="women">Women</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="kids_fashion" name="subcategory"
+                                            value="kids_fashion">
+                                        <label for="kids_fashion">Kids</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pets & Accessories -->
+                            <div class="category-list">
+                                <div class="category-item" onclick="toggleCategory('pets')">
+                                    Pets & Accessories
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="pets-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="fish" name="subcategory" value="fish">
+                                        <label for="fish">Fish Aquarium & Accessories</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="pet_acc" name="subcategory" value="pet_acc">
+                                        <label for="pet_acc">Pet Accessories</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="books_sports" name="subcategory"
+                                            value="books_sports">
+                                        <label for="books_sports">Books, Sports Accessories</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Spare Parts -->
+                            <div class="category-list" style="margin-bottom: 10px;">
+                                <div class="category-item" onclick="toggleCategory('spare_parts')">
+                                    Spare Parts
+                                    <i class="fas fa-angle-right"></i>
+                                </div>
+                                <div class="subcategory-list" id="spare_parts-subcategories">
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="original" name="subcategory" value="original">
+                                        <label for="original">Original Parts</label>
+                                    </div>
+                                    <div class="subcategory-item">
+                                        <input type="checkbox" id="aftermarket" name="subcategory" value="aftermarket">
+                                        <label for="aftermarket">Aftermarket Parts</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Filter -->
+                        <div class="filter-group">
+                            <div class="filter-header" onclick="toggleFilter('location')">
+                                Location
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="filter-content" id="location-content">
+                                <div class="location-input-container">
+                                    <input type="text" class="location-input" placeholder="Enter pincode"
+                                        id="pincode-input">
+                                    <button class="location-search-btn" onclick="searchByPincode()">Search</button>
+                                </div>
+                                <div class="location-divider">OR</div>
+                                <button class="location-btn" onclick="getCurrentLocation()">
+                                    <i class="fas fa-location-arrow"></i>
+                                    Use my current location
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Price Filter -->
+                        <div class="filter-group">
+                            <div class="filter-header" onclick="toggleFilter('price')">
+                                Price
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="filter-content" id="price-content">
+                                <div class="price-slider">
+                                    <div class="price-slider-container" id="price-slider">
+                                        <div class="price-slider-track" id="price-track"></div>
+                                        <div class="price-slider-thumb" id="min-thumb"></div>
+                                        <div class="price-slider-thumb" id="max-thumb"></div>
+                                    </div>
+                                    <div class="price-values">
+                                        <span id="min-price-value">₹0</span>
+                                        <span id="max-price-value">₹99999999</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bids Count Filter -->
+                        <div class="filter-group">
+                            <div class="filter-header" onclick="toggleFilter('bids')">
+                                Bids Count
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="filter-content" id="bids-content">
+                                <div class="radio-option">
+                                    <input type="radio" id="most-bids" name="bids-sort" value="most">
+                                    <label for="most-bids">Most Bids</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="least-bids" name="bids-sort" value="least">
+                                    <label for="least-bids">Least Bids</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Items Grid -->
+                <div class="items-grid">
+                    <% items.forEach(function(item) { %>
+                        <div class="item-card" data-item-id="<%= item._id %>" data-model-name="<%= item.modelName || 'cars' %>" onclick="navigateToItem(this)" style="cursor: pointer;">
+                            <div class="item-image">
+                                <img src="<%= item.photo1 || 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop' %>"
+                                    alt="<%= item.adTitle || item.model || 'Item' %>">
+                                <button
+                                    class="like-button <%= (user && user.wishlist && user.wishlistModel && user.wishlist.findIndex(function(id, idx){ return String(id) === String(item._id) && user.wishlistModel[idx] === (item.modelName || '') }) !== -1) ? 'liked' : '' %>"
+                                    onclick="toggleLike(event, this); event.stopPropagation();" aria-label="Add to favorites"
+                                    data-item-id="<%= item._id ? item._id : 'MISSING_ID' %>"
+                                    data-model-name="<%= item.modelName ? item.modelName : 'MISSING_MODEL' %>"
+                                    <%=(!item._id || !item.modelName)
+                                    ? 'style="border:2px solid red;"' : '' %>>
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <% if (!item._id || !item.modelName) { %>
+                                    <div style="color:red;font-size:12px;">Invalid item data for
+                                        wishlist: <%= JSON.stringify(item) %>
+                                    </div>
+                                    <% } %>
+                                <div class="item-bid-info">
+                                    <div class="time-info">
+                                        <span class="material-symbols-outlined">schedule</span>
+                                        <span class="time-remaining" data-duration="<%= item.auctionDuration %>" data-start="<%= item.createdAt %>"></span>
+                                    </div>
+                                    <div class="price-info">
+                                        <div class="price-info-bid">Bid </div>
+                                        <div class="price-info-price">₹<%= item.basePrice || 'N/A' %></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <div class="item-title">
+                                    <%= item.adTitle || item.model || item.itemTitle || 'Item' %>
+                                </div>
+                                <div class="item-description">
+                                    <% if (item.auctionType==='Reserve' ) { %>
+                                        <div class="reserve-button">RESERVE</div>
+                                        <% } else { %>
+                                            <div class="no-reserve-button">NO RESERVE</div>
+                                            <% } %>
+                                    <%= item.description || item.desription %>
+                                </div>
+                                <div class="item-location">
+                                    <%= item.city || '' %>, <%= item.state || '' %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+
+            <script>
+                function nextSlide() {
+                    // Find all featured items
+                    if (!window._featuredItems || !Array.isArray(window._featuredItems)) return;
+                    let currentIndex = window._featuredIndex || 0;
+                    const featuredItems = window._featuredItems;
+                    // Move to next index
+                    currentIndex = (currentIndex + 1) % featuredItems.length;
+                    window._featuredIndex = currentIndex;
+                    renderFeatured(featuredItems[currentIndex]);
+                }
+
+
+                function previousSlide() {
+                    // Find all featured items
+                    if (!window._featuredItems || !Array.isArray(window._featuredItems)) return;
+                    let currentIndex = window._featuredIndex || 0;
+                    const featuredItems = window._featuredItems;
+                    // Move to previous index
+                    currentIndex = (currentIndex - 1 + featuredItems.length) % featuredItems.length;
+                    window._featuredIndex = currentIndex;
+                    renderFeatured(featuredItems[currentIndex]);
+                }
+
+
+                // User wishlist pairs injected from server for initial liked state
+                const userWishlistPairs = JSON.parse('<%- JSON.stringify(user && user.wishlist && user.wishlistModel ? user.wishlist.map((id, idx) => ({ id: String(id), model: user.wishlistModel[idx] })) : []) %>');
+
+                function isWishlisted(itemId, modelName) {
+                    if (!itemId || !modelName) return false;
+                    const idStr = String(itemId);
+                    // modelName is stored canonically (case-sensitive for camelCase like mobileAccessories)
+                    return userWishlistPairs.some(p => p.id === idStr && p.model === modelName);
+                }
+
+                function toggleLike(event, button) {
+                    // Prevent the click event from bubbling up to the card
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const itemId = button.getAttribute('data-item-id');
+                    const modelName = button.getAttribute('data-model-name');
+                    const userId = "<%= user && user._id ? user._id : '' %>";
+                    if (!userId) {
+                        // Remove any existing notification
+                        document.querySelectorAll('.notification.signin').forEach(n => n.remove());
+                        const note = document.createElement('div');
+                        note.className = 'signin-popup';
+                        note.innerHTML = 'Sign in First';
+                        note.style.position = 'fixed';
+                        note.style.top = '24px';
+                        note.style.left = '50%';
+                        note.style.transform = 'translateX(-50%)';
+                        note.style.background = '#D41717';
+                        note.style.color = '#fff';
+                        note.style.padding = '16px 32px';
+                        note.style.borderRadius = '8px';
+                        note.style.fontSize = '1.1rem';
+                        note.style.zIndex = '9999';
+                        note.style.boxShadow = '0 2px 8px #0002';
+                        document.body.appendChild(note);
+                        setTimeout(() => note.remove(), 2000);
+                        return;
+                    }
+                    const willLike = !button.classList.contains('liked');
+                    if (willLike) {
+                        // Optimistic like
+                        button.classList.add('liked');
+                        fetch('/wishlist/add', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId, itemId, modelName })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (!data.success) {
+                                    showInPageAlert('Failed to add to wishlist');
+                                    button.classList.remove('liked');
+                                } else {
+                                    // Sync local cache
+                                    userWishlistPairs.push({ id: String(itemId), model: modelName });
+                                }
+                            })
+                            .catch(() => {
+                                showInPageAlert('Error adding to wishlist');
+                                button.classList.remove('liked');
+                            });
+                    } else {
+                        // Optimistic unlike
+                        button.classList.remove('liked');
+                        fetch('/wishlist/remove', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId, itemId, modelName })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (!data.success) {
+                                    showInPageAlert('Failed to remove from wishlist');
+                                    button.classList.add('liked');
+                                } else {
+                                    // Sync local cache
+                                    const idx = userWishlistPairs.findIndex(p => p.id === String(itemId) && p.model === modelName);
+                                    if (idx !== -1) userWishlistPairs.splice(idx, 1);
+                                }
+                            })
+                            .catch(() => {
+                                showInPageAlert('Error removing from wishlist');
+                                button.classList.add('liked');
+                            });
+                    }
+                }
+
+                function toggleFilter(filterId) {
+                    const filterContent = document.getElementById(filterId + '-content');
+                    const filterHeader = filterContent.parentElement.querySelector('.filter-header');
+                    const isExpanded = filterContent.classList.contains('expanded');
+
+                    if (isExpanded) {
+                        filterContent.classList.remove('expanded');
+                        filterHeader.classList.remove('expanded');
+                    } else {
+                        filterContent.classList.add('expanded');
+                        filterHeader.classList.add('expanded');
+                    }
+                }
+
+                function toggleCategory(categoryId) {
+                    const subcategoriesList = document.getElementById(categoryId + '-subcategories');
+                    const categoryItem = subcategoriesList.parentElement.querySelector('.category-item');
+                    const isExpanded = subcategoriesList.classList.contains('expanded');
+
+                    if (isExpanded) {
+                        subcategoriesList.classList.remove('expanded');
+                        categoryItem.classList.remove('expanded');
+                    } else {
+                        subcategoriesList.classList.add('expanded');
+                        categoryItem.classList.add('expanded');
+                    }
+                }
+
+                function updatePriceRange() {
+                    const minPrice = document.getElementById('min-price').value;
+                    const maxPrice = document.getElementById('max-price').value;
+
+                    document.getElementById('min-price-value').textContent = '₹' + parseInt(minPrice).toLocaleString('en-IN');
+                    document.getElementById('max-price-value').textContent = '₹' + parseInt(maxPrice).toLocaleString('en-IN');
+                }
+
+                function getCurrentLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function (position) {
+                                showInPageAlert(`Location found: ${position.coords.latitude}, ${position.coords.longitude}`);
+                            },
+                            function (error) {
+                                showInPageAlert('Error getting location: ' + error.message);
+                            }
+                        );
+                    } else {
+                        showInPageAlert('Geolocation is not supported by this browser.');
+                    }
+                }
+
+                                 function searchByPincode() {
+                     const pincode = document.getElementById('pincode-input').value;
+                     if (pincode) {
+                         console.log(`Searching for pincode: ${pincode}`);
+                         updateAuctions();
+                     } else {
+                         showInPageAlert('Please enter a pincode');
+                     }
+                 }
+
+                                 function clearAllFilters() {
+                     // Clear all checkboxes
+                     document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+ 
+                     // Clear all radio buttons except the default sort option
+                     document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                         if (radio.name === 'sort-by' && radio.value === 'newly-listed') {
+                             radio.checked = false;
+                         } else {
+                             radio.checked = false;
+                         }
+                     });
+ 
+                     // Reset price sliders
+                     document.getElementById('min-price-value').textContent = '₹0';
+    document.getElementById('max-price-value').textContent = '₹999999999';
+    initPriceSlider();
+ 
+                     // Clear location input
+                     document.getElementById('pincode-input').value = '';
+ 
+                     // Update the display
+                     updateAuctions();
+                     
+                     console.log('All filters cleared!');
+                 }
+
+                function initPriceSlider() {
+                    const slider = document.getElementById('price-slider');
+                    const track = document.getElementById('price-track');
+                    const minThumb = document.getElementById('min-thumb');
+                    const maxThumb = document.getElementById('max-thumb');
+                    const minValue = document.getElementById('min-price-value');
+                    const maxValue = document.getElementById('max-price-value');
+
+                    const min = 0;
+                    const max = 99999999;
+                    let minPos = 0;
+                    let maxPos = 100;
+
+                                         function updateSlider() {
+                         // Update track position
+                         track.style.left = minPos + '%';
+                         track.style.right = (100 - maxPos) + '%';
+ 
+                         // Update thumb positions
+                         minThumb.style.left = minPos + '%';
+                         maxThumb.style.left = maxPos + '%';
+ 
+                         // Update displayed values
+                         const minPrice = Math.round(min + (minPos / 100) * (max - min));
+                         const maxPrice = Math.round(min + (maxPos / 100) * (max - min));
+ 
+                         minValue.textContent = '₹' + minPrice.toLocaleString('en-IN');
+                         maxValue.textContent = '₹' + maxPrice.toLocaleString('en-IN');
+                         
+                         // Trigger filter update after a short delay to avoid too many updates
+                         clearTimeout(window.priceUpdateTimeout);
+                         window.priceUpdateTimeout = setTimeout(() => {
+                             updateAuctions();
+                         }, 500);
+                     }
+
+                    function dragThumb(thumb, isMin) {
+                        let startX = 0;
+                        let startPos = 0;
+
+                        function onMouseMove(e) {
+                            const sliderRect = slider.getBoundingClientRect();
+                            const newPos = Math.min(100, Math.max(0, ((e.clientX - sliderRect.left) / sliderRect.width) * 100));
+
+                            if (isMin) {
+                                if (newPos <= maxPos - 5) {
+                                    minPos = newPos;
+                                }
+                            } else {
+                                if (newPos >= minPos + 5) {
+                                    maxPos = newPos;
+                                }
+                            }
+
+                            updateSlider();
+                        }
+
+                        function onMouseUp() {
+                            document.removeEventListener('mousemove', onMouseMove);
+                            document.removeEventListener('mouseup', onMouseUp);
+                        }
+
+                        document.addEventListener('mousemove', onMouseMove);
+                        document.addEventListener('mouseup', onMouseUp);
+                    }
+
+                    minThumb.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        dragThumb(minThumb, true);
+                    });
+
+                    maxThumb.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        dragThumb(maxThumb, false);
+                    });
+
+                    // Initialize slider
+                    updateSlider();
+                }
+
+                // Initialize on page load
+                document.addEventListener('DOMContentLoaded', function () {
+                    initPriceSlider();
+
+                    // Auto slide functionality
+                    setInterval(() => {
+                        console.log('Auto slide would change here');
+                    }, 5000);
+
+                    // Update countdown timers
+                    setInterval(() => {
+                        console.log('Timer update');
+                    }, 1000);
+                });
+            </script>
+        </div>
+        <script src="/js/header.js"></script>
+        <script>
+            // Test function to check if item cards are clickable
+            function testItemCardClick() {
+                console.log('Testing item card clicks...');
+                const itemCards = document.querySelectorAll('.item-card');
+                console.log('Found', itemCards.length, 'item cards');
+                itemCards.forEach((card, index) => {
+                    console.log('Card', index, ':', card);
+                    console.log('Card onclick:', card.onclick);
+                    console.log('Card getAttribute onclick:', card.getAttribute('onclick'));
+                });
+            }
+            
+            // Run test after page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(testItemCardClick, 2000); // Wait for dynamic content to load
+            });
+        </script>
+        <script>
+// --- Robust Countdown Timer for Auction Items ---
+function parseDurationToSeconds(duration) {
+    if (!duration) return 0;
+    duration = duration.toLowerCase();
+    let total = 0;
+    const dayMatch = duration.match(/(\d+)\s*day/);
+    const hourMatch = duration.match(/(\d+)\s*hour/);
+    const minMatch = duration.match(/(\d+)\s*min/);
+    if (dayMatch) total += parseInt(dayMatch[1], 10) * 86400;
+    if (hourMatch) total += parseInt(hourMatch[1], 10) * 3600;
+    if (minMatch) total += parseInt(minMatch[1], 10) * 60;
+    return total;
+}
+
+function formatTimeLeft(seconds) {
+    if (seconds < 0) seconds = 0;
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (d > 0) {
+        return `${d}d ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    } else {
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+}
+
+function updateAllCountdowns() {
+    const now = Date.now();
+    document.querySelectorAll('.time-remaining').forEach(function(span) {
+        const durationStr = span.getAttribute('data-duration');
+        const startStr = span.getAttribute('data-start');
+        const durationSec = parseDurationToSeconds(durationStr);
+        let startTime = Date.parse(startStr);
+        let endTime;
+        if (!isNaN(startTime)) {
+            endTime = startTime + durationSec * 1000;
+        } else {
+            // Fallback: start now
+            endTime = now + durationSec * 1000;
+        }
+        let secondsLeft = Math.floor((endTime - now) / 1000);
+        if (secondsLeft <= 0) {
+            span.textContent = 'Ended';
+            span.classList.add('ended');
+        } else {
+            span.textContent = formatTimeLeft(secondsLeft);
+            span.classList.remove('ended');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateAllCountdowns();
+    setInterval(updateAllCountdowns, 1000);
+    // Ensure timer is always live, even after dynamic content loads
+    const observer = new MutationObserver((mutationsList) => {
+        let needsUpdate = false;
+        for (const mutation of mutationsList) {
+            if ([...mutation.addedNodes].some(node => node.nodeType === 1 && node.querySelector && node.querySelector('.time-remaining'))) {
+                needsUpdate = true;
+            }
+        }
+        if (needsUpdate) updateAllCountdowns();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+});
+            // --- Auction Items Fetch & Render Logic ---
+function getSelectedFilters() {
+    const minPriceText = document.getElementById('min-price-value')?.textContent || '₹0';
+    const maxPriceText = document.getElementById('max-price-value')?.textContent || '₹999999999';
+    // If no filters are selected, return all filters as false/empty
+    const auctionType = document.querySelector('input[name="auction-type"]:checked')?.value || '';
+    const categories = Array.from(document.querySelectorAll('input[name="subcategory"]:checked')).map(cb => cb.value);
+    const location = document.getElementById('pincode-input')?.value || '';
+    const minPrice = parseInt(minPriceText.replace(/[^0-9]/g, '')) || 0;
+    const maxPrice = parseInt(maxPriceText.replace(/[^0-9]/g, '')) || 5000000;
+    const bidsCount = document.querySelector('input[name="bids-sort"]:checked')?.value || '';
+
+    // If all filters are empty, treat as no filter
+    const noFilters = !auctionType && categories.length === 0 && !location && minPrice === 0 && maxPrice === 5000000 && !bidsCount;
+    if (noFilters) {
+        return {
+            sortBy: getSelectedSortOption(),
+            auctionType: '',
+            categories: [],
+            location: '',
+            minPrice: 0,
+            maxPrice: 5000000,
+            bidsCount: ''
+        };
+    }
+    return {
+        sortBy: getSelectedSortOption(),
+        auctionType,
+        categories,
+        location,
+        minPrice,
+        maxPrice,
+        bidsCount
+    };
+}
+
+// Category mapping to match backend endpoints
+const categoryMapping = {
+    'cars': 'cars',
+    'bikes': 'bikes', 
+    'scooters': 'scooters',
+    'bicycles': 'bicycles',
+    'commercial': 'commercial-vehicles',
+    'homes': 'homes',
+    'lands': 'lands',
+    'shops': 'shops',
+    'office': 'office',
+    'tv_audio': 'tv',
+    'kitchen': 'kitchen',
+    'computers': 'computers',
+    'cameras': 'camera',
+    'games': 'games',
+    'fridges': 'fridge',
+    'ac': 'ac',
+    'washing': 'washing',
+    'computer_acc': 'accessories',
+    'mobile_phones': 'mobiles',
+    'tablets': 'tablets',
+    'mobile_acc': 'mobile-accessories',
+    'sofa_dining': 'sofa',
+    'beds': 'beds',
+    'home_decor': 'decor',
+    'kids_furniture': 'kids-furniture',
+    'household': 'others',
+    'men': 'men',
+    'women': 'women',
+    'kids_fashion': 'kids',
+    'fish': 'aquarium',
+    'pet_acc': 'pet-accessories',
+    'books_sports': 'books-sports',
+    'original': 'original',
+    'aftermarket': 'aftermarket'
+};
+
+function filterItems(items) {
+    const filters = getSelectedFilters();
+    console.log('Applying filters:', filters);
+    const filtered = [];
+    const excluded = [];
+    items.forEach(item => {
+        // Skip featured items since they're shown in the featured section
+        if (item.isFeatured) {
+            excluded.push({ item, excludeReason: 'featured' });
+            return;
+        }
+        let excludeReason = '';
+        // Auction Type Filter
+        if (filters.auctionType && item.auctionType) {
+            const itemTypeRaw = item.auctionType;
+            const itemType = itemTypeRaw.toLowerCase().replace(/\s+/g, '').replace(/-/g, '');
+            const filterTypeRaw = filters.auctionType;
+            const filterType = filterTypeRaw.toLowerCase().replace(/\s+/g, '').replace(/-/g, '');
+            console.log(`[AuctionType Filter] Raw: item='${itemTypeRaw}', filter='${filterTypeRaw}' | Normalized: item='${itemType}', filter='${filterType}'`);
+            if (filterType === 'reserve' && itemType !== 'reserve') excludeReason = 'auctionType';
+            if (filterType === 'noreserve' && itemType !== 'noreserve') excludeReason = 'auctionType';
+        }
+        // Category Filter
+        if (!excludeReason && filters.categories.length > 0) {
+            const itemCategory = item.modelName || '';
+            const selectedCategories = filters.categories.map(cat => categoryMapping[cat] || cat);
+            if (!selectedCategories.includes(itemCategory)) excludeReason = 'category';
+        }
+        // Location Filter (Pincode)
+        if (!excludeReason && filters.location && filters.location.trim()) {
+            const itemPincode = item.pincode || item.pinCode || '';
+            if (itemPincode && !itemPincode.toString().includes(filters.location.trim())) excludeReason = 'location';
+        }
+        // Price Filter
+        if (!excludeReason && filters.minPrice && item.basePrice < filters.minPrice) excludeReason = 'minPrice';
+        if (!excludeReason && filters.maxPrice && item.basePrice > filters.maxPrice) excludeReason = 'maxPrice';
+        // Bids Count Filter
+        if (!excludeReason && filters.bidsCount) {
+            const bidsCount = item.bidsCount || item.bids?.length || 0;
+            if (filters.bidsCount === 'most' && bidsCount < 5) excludeReason = 'bidsCount';
+            if (filters.bidsCount === 'least' && bidsCount > 0) excludeReason = 'bidsCount';
+        }
+        if (excludeReason) {
+            excluded.push({ item, excludeReason });
+        } else {
+            filtered.push(item);
+        }
+    });
+    console.log('Filtered items:', filtered);
+    console.log('Excluded items:', excluded.map(e => ({ id: e.item._id, reason: e.excludeReason, item: e.item })));
+    return filtered;
+}
+function getSelectedSortOption() {
+    const selected = document.querySelector('input[name="sort-by"]:checked');
+    return selected ? selected.value : 'newly-listed';
+}
+
+function sortItems(items) {
+    const sortOption = getSelectedSortOption();
+    console.log('Sorting by:', sortOption);
+    
+    return items.slice().sort((a, b) => {
+        if (sortOption === 'newly-listed') {
+            // Sort by createdAt descending (newest first)
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateB - dateA;
+        } else if (sortOption === 'ending-soon') {
+            // Sort by auction end time ascending (ending soonest first)
+            const daysA = durationStringToDays(a.auctionDuration);
+            const daysB = durationStringToDays(b.auctionDuration);
+            const endA = new Date(a.createdAt || 0).getTime() + (daysA || 0) * 24 * 60 * 60 * 1000;
+            const endB = new Date(b.createdAt || 0).getTime() + (daysB || 0) * 24 * 60 * 60 * 1000;
+            return endA - endB;
+        }
+        return 0;
+    });
+}
+            const endpoints = [
+                '/ac', '/accessories', '/camera', '/computers', '/fridge', '/games', '/kitchen', '/tv', '/washing', '/kids', '/men', '/women', '/beds', '/decor', '/kids-furniture', '/others', '/sofa', '/mobile-accessories', '/mobiles', '/tablets', '/aquarium', '/books-sports', '/pet-accessories', '/aftermarket', '/original', '/books-sports', '/pet-accessories', '/homes', '/lands', '/shops', '/office', '/cars', '/bikes', '/scooters', '/bicycles', '/commercial-vehicles', '/original', '/aftermarket'
+            ];
+
+            function durationStringToDays(duration) {
+                if (!duration) return 0;
+                // normalize to string and lowercase to match 'Day', 'day', 'Days', etc.
+                const s = String(duration).toLowerCase();
+                const match = s.match(/(\d+)\s*days?/);
+                return match ? parseInt(match[1], 10) : 0;
+            }
+
+            function isAuctionActive(item) {
+                if (!item.createdAt || !item.auctionDuration) return false;
+                const created = new Date(item.createdAt);
+                const days = durationStringToDays(item.auctionDuration);
+                if (!days) return false;
+                const end = new Date(created.getTime() + days * 24 * 60 * 60 * 1000);
+                return end > new Date();
+            }
+
+            async function fetchAllActiveItems() {
+                const allItems = [];
+                for (const url of endpoints) {
+                    try {
+                        const res = await fetch(url);
+                        const items = await res.json();
+                        if (Array.isArray(items)) {
+                            const modelSlug = url.replace(/^\//, '');
+                            for (const item of items) {
+                                if (isAuctionActive(item)) {
+                                    // Attach canonical model slug for wishlist logic
+                                    allItems.push({ ...item, modelName: modelSlug });
+                                }
+                            }
+                        }
+                    } catch (e) { /* skip endpoint on error */ }
+                }
+                return allItems;
+            }
+
+            function renderFeatured(item) {
+                console.log('renderFeatured called with:', item);
+                // Only display featured item if isFeatured is true
+                if (!item || !item.isFeatured) {
+                    const featuredSection = document.querySelector('.featured-section');
+                    if (featuredSection) featuredSection.innerHTML = '';
+                    return;
+                }
+                const featuredSection = document.querySelector('.featured-section');
+                if (!featuredSection) return;
+                // Build photos array from item.photos or photo1-photo5
+                let photos = Array.isArray(item.photos) && item.photos.length >= 5
+                    ? item.photos.slice(0, 5)
+                    : [item.photo1, item.photo2, item.photo3, item.photo4, item.photo5].filter(Boolean);
+                featuredSection.innerHTML = `
+        <div class="featured-badge">FEATURED</div>
+        <div class="featured-content">
+                <div class="main-image" onclick="window.location.href='/item/${item.modelName || 'cars'}/${item._id}'" style="cursor:pointer;">
+                <img src="${photos[0] || ''}" alt="${item.adTitle || item.model || 'Featured'}">
+                <div class="main-image-title">${item.adTitle || item.model || item.itemTitle}</div>
+                <div class="item-bid-info">
+                    <div class="time-info">
+                        <span class="material-symbols-outlined">schedule</span>
+                        <span class="time-remaining featured-timer" data-duration="${item.auctionDuration}" data-start="${item.createdAt}"></span>
+                    </div>
+                    <div class="price-info">
+                        <div class="price-info-bid">Bid </div>
+                        <div class="price-info-price">₹${item.basePrice || 'N/A'}</div>
+                    </div>
+                </div>
+            </div>
+                <div class="thumbnail-grid">
+                ${photos.slice(1, 5).map(photo => `<div class='thumbnail' onclick="window.location.href='/item/${item.modelName || 'cars'}/${item._id}'" style="cursor:pointer;"><img src='${photo}' alt='Thumbnail'></div>`).join('')}
+            </div>
+        </div>
+        <button class="slider-controls prev" onclick="previousSlide()"><i class="bi bi-chevron-left"></i></button>
+        <button class="slider-controls next" onclick="nextSlide()"><i class="bi bi-chevron-right"></i></button>
+    `;
+                // Ensure timer updates for featured section
+                setTimeout(updateAllCountdowns, 0);
+            }
+
+            // Helper to match backend modelMap keys
+            function fixModelName(modelName) {
+                if (!modelName) return '';
+                // Always send 'cars' for cars model
+                const key = modelName.replace(/[-_ ]/g, '').toLowerCase();
+                if (key === 'car' || key === 'cars') return 'cars';
+                // Other special cases if needed
+                return key;
+            }
+
+            function renderItemsGrid(items) {
+                const grid = document.querySelector('.items-grid');
+                if (!grid) return;
+                
+                if (items.length === 0) {
+                    grid.innerHTML = `
+                        <div class="no-items-found">
+                            <h3>No items found</h3>
+                            <p>Try adjusting your filters or search criteria.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                grid.innerHTML = items.map(item => `
+        <div class="item-card" onclick="console.log('Item clicked:', '${item.modelName || 'cars'}', '${item._id}'); window.location.href='/item/${item.modelName || 'cars'}/${item._id}'" style="cursor: pointer;">
+            <div class="item-image">
+                <img src="${item.photo1 || 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop'}" alt="${item.adTitle || item.model || 'Item'}">
+                <button class="like-button ${isWishlisted(item._id, (item.modelName || '').toString().toLowerCase()) ? 'liked' : ''}" onclick="toggleLike(event, this); event.stopPropagation();" aria-label="Add to favorites" data-item-id="${item._id || ''}" data-model-name="${(item.modelName || '').toString().toLowerCase()}">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="item-bid-info">
+                    <div class="time-info">
+                        <span class="material-symbols-outlined">schedule</span>
+                        <span class="time-remaining" data-duration="${item.auctionDuration}" data-start="${item.createdAt}"></span>
+                    </div>
+                    <div class="price-info">
+                        <div class="price-info-bid">Bid </div>
+                        <div class="price-info-price">₹${item.basePrice || 'N/A'}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="item-details">
+                <div class="item-title">${item.adTitle || item.model || item.itemTitle || 'Item'}</div>
+                <div class="item-description">
+                    <div class="${item.auctionType === 'No Reserve' ? 'no-reserve-button' : 'reserve-button'}">${item.auctionType ? item.auctionType.toUpperCase() : ''}</div>
+                    <span>${typeof item.description === 'string' && item.description.trim() ? item.description : ''}</span>
+                </div>
+                <div class="item-location">${item.city || item.location || ''}${item.state ? ', ' + item.state : ''}</div>
+            </div>
+        </div>
+    `).join('');
+            }
+
+            async function updateAuctions() {
+                const grid = document.querySelector('.items-grid');
+                if (grid) {
+                    grid.classList.add('loading');
+                }
+                
+                try {
+                    const items = await fetchAllActiveItems();
+                    // Deduplicate items by _id and modelName
+                    const uniqueItems = [];
+                    const seen = new Set();
+                    for (const item of items) {
+                        const key = String(item._id) + '|' + String(item.modelName);
+                        if (!seen.has(key)) {
+                            uniqueItems.push(item);
+                            seen.add(key);
+                        }
+                    }
+                    // Store items globally for debugging
+                    window._allItems = uniqueItems;
+                    // Handle featured items from deduplicated list
+                    const featuredItems = uniqueItems.filter(i => i.isFeatured === true);
+                    window._featuredItems = featuredItems;
+                    if (typeof window._featuredIndex !== 'number' || window._featuredIndex >= featuredItems.length) {
+                        window._featuredIndex = 0;
+                    }
+                    if (featuredItems.length > 0) {
+                        renderFeatured(featuredItems[window._featuredIndex]);
+                    } else {
+                        renderFeatured(null);
+                    }
+                    // Apply filters and sorting
+                    const filtered = filterItems(uniqueItems);
+                    const sorted = sortItems(filtered);
+                    console.log(`Showing ${sorted.length} items out of ${uniqueItems.length} total items`);
+                    
+                    // Log filter details
+                    const filters = getSelectedFilters();
+                    if (filters.auctionType) {
+                        console.log(`🔍 Auction Type Filter: "${filters.auctionType}" - Showing ${filtered.length} items`);
+                    }
+                    renderItemsGrid(sorted);
+                    
+                    // Update filter visual feedback
+                    updateFilterVisualFeedback();
+                } catch (error) {
+                    console.error('Error updating auctions:', error);
+                    if (grid) {
+                        grid.innerHTML = `
+                            <div class="error-message">
+                                <h3>Error loading items</h3>
+                                <p>Please try refreshing the page.</p>
+                            </div>
+                        `;
+                    }
+                } finally {
+                    if (grid) {
+                        grid.classList.remove('loading');
+                    }
+                }
+            }
+            
+            function updateFilterVisualFeedback() {
+                const filters = getSelectedFilters();
+                
+                // Remove all active filter classes
+                document.querySelectorAll('.filter-group').forEach(group => {
+                    group.classList.remove('filter-active');
+                });
+                
+                // Add active class to groups with active filters
+                if (filters.auctionType) {
+                    document.querySelector('.filter-group:has(#auction-type-content)')?.classList.add('filter-active');
+                }
+                
+                if (filters.categories.length > 0) {
+                    document.querySelector('.filter-group:has(#category-content)')?.classList.add('filter-active');
+                }
+                
+                if (filters.location) {
+                    document.querySelector('.filter-group:has(#location-content)')?.classList.add('filter-active');
+                }
+                
+                if (filters.minPrice > 0 || filters.maxPrice < 5000000) {
+                    document.querySelector('.filter-group:has(#price-content)')?.classList.add('filter-active');
+                }
+                
+                if (filters.bidsCount) {
+                    document.querySelector('.filter-group:has(#bids-content)')?.classList.add('filter-active');
+                }
+                
+                // Update filter count badge
+                updateFilterCount();
+            }
+            
+            function updateFilterCount() {
+                const filters = getSelectedFilters();
+                let activeFilterCount = 0;
+                
+                if (filters.auctionType) activeFilterCount++;
+                if (filters.categories.length > 0) activeFilterCount++;
+                if (filters.location) activeFilterCount++;
+                if (filters.minPrice > 0 || filters.maxPrice < 5000000) activeFilterCount++;
+                if (filters.bidsCount) activeFilterCount++;
+                
+                const filterBtn = document.getElementById('openFilterDrawer');
+                if (filterBtn) {
+                    const existingBadge = filterBtn.querySelector('.filter-count-badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                    
+                    if (activeFilterCount > 0) {
+                        const badge = document.createElement('span');
+                        badge.className = 'filter-count-badge';
+                        badge.textContent = activeFilterCount;
+                        filterBtn.appendChild(badge);
+                    }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', updateAuctions);
+            
+            // Debug function to check auction types
+            window.debugAuctionTypes = function() {
+                const items = window._allItems || [];
+                const auctionTypes = [...new Set(items.map(item => item.auctionType))];
+                console.log('Available auction types:', auctionTypes);
+                console.log('Items with each type:');
+                auctionTypes.forEach(type => {
+                    const count = items.filter(item => item.auctionType === type).length;
+                    console.log(`- "${type}": ${count} items`);
+                });
+                return auctionTypes;
+            };
+            
+            // Re-render on any filter change
+            document.querySelectorAll('.filter-sidebar input').forEach(input => {
+                input.addEventListener('change', () => {
+                    setTimeout(updateAuctions, 0);
+                });
+            });
+
+// Re-render on sort change
+document.querySelectorAll('input[name="sort-by"]').forEach(input => {
+    input.addEventListener('change', () => {
+        updateAuctions();
+    });
+});
+
+// Add event listener for location input (search on Enter key)
+document.addEventListener('DOMContentLoaded', function() {
+    const pincodeInput = document.getElementById('pincode-input');
+    if (pincodeInput) {
+        pincodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchByPincode();
+            }
+        });
+        
+        // Also update on input change with debouncing
+        let locationUpdateTimeout;
+        pincodeInput.addEventListener('input', function() {
+            clearTimeout(locationUpdateTimeout);
+            locationUpdateTimeout = setTimeout(() => {
+                if (this.value.trim()) {
+                    updateAuctions();
+                }
+            }, 1000);
+        });
+    }
+});
+            setInterval(updateAuctions, 10000); // Poll every 10 seconds
+
+            // Auto slide featured items every 5 seconds
+            setInterval(function () {
+                if (window._featuredItems && window._featuredItems.length > 1) {
+                    nextSlide();
+                }
+            }, 5000);
+        </script>
+
+        <%- include ('footer') %>
+</body>
+    <script>
+    // Converts duration string to seconds (e.g., "1 day" => 86400)
+    function durationStringToSeconds(str) {
+        if (!str) return 0;
+        str = str.trim().toLowerCase();
+        const match = str.match(/(\d+)\s*(day|days|hour|hours|minute|minutes|second|seconds)/);
+        if (!match) return 0;
+        const num = parseInt(match[1], 10);
+        if (str.includes('day')) return num * 24 * 60 * 60;
+        if (str.includes('hour')) return num * 60 * 60;
+        if (str.includes('minute')) return num * 60;
+        if (str.includes('second')) return num;
+        return 0;
+    }
+
+    // Robust, live countdown timer for all .time-remaining elements
+    function parseDurationToSeconds(duration) {
+        if (!duration) return 0;
+        duration = duration.toLowerCase();
+        let total = 0;
+        const dayMatch = duration.match(/(\d+)\s*day/);
+        const hourMatch = duration.match(/(\d+)\s*hour/);
+        const minMatch = duration.match(/(\d+)\s*min/);
+        if (dayMatch) total += parseInt(dayMatch[1], 10) * 86400;
+        if (hourMatch) total += parseInt(hourMatch[1], 10) * 3600;
+        if (minMatch) total += parseInt(minMatch[1], 10) * 60;
+        return total;
+    }
+
+    function formatTimeLeft(seconds) {
+        if (seconds < 0) seconds = 0;
+        const d = Math.floor(seconds / 86400);
+        const h = Math.floor((seconds % 86400) / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        if (d > 0) {
+            return `${d}d ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        } else {
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+    }
+
+    function updateAllCountdowns() {
+        const now = Date.now();
+        document.querySelectorAll('.time-remaining').forEach(function(span) {
+            const durationStr = span.getAttribute('data-duration');
+            const startStr = span.getAttribute('data-start');
+            const durationSec = parseDurationToSeconds(durationStr);
+            let startTime = Date.parse(startStr);
+            let endTime;
+            if (!isNaN(startTime)) {
+                endTime = startTime + durationSec * 1000;
+            } else {
+                // Fallback: start now
+                endTime = now + durationSec * 1000;
+            }
+            let secondsLeft = Math.floor((endTime - now) / 1000);
+            if (secondsLeft <= 0) {
+                span.textContent = 'Ended';
+                span.classList.add('ended');
+            } else {
+                span.textContent = formatTimeLeft(secondsLeft);
+                span.classList.remove('ended');
+            }
+        });
+    }
+    setInterval(updateAllCountdowns, 1000);
+    document.addEventListener('DOMContentLoaded', updateAllCountdowns);
+    </script>
+    <script>
+    // Converts duration string to seconds (e.g., "1 day" => 86400)
+    function durationStringToSeconds(str) {
+        if (!str) return 0;
+        str = str.trim().toLowerCase();
+        const match = str.match(/(\d+)\s*(day|days|hour|hours|minute|minutes|second|seconds)/);
+        if (!match) return 0;
+        const num = parseInt(match[1], 10);
+        if (str.includes('day')) return num * 24 * 60 * 60;
+        if (str.includes('hour')) return num * 60 * 60;
+        if (str.includes('minute')) return num * 60;
+        if (str.includes('second')) return num;
+        return 0;
+    }
+
+    // Initialize countdowns for all .time-remaining elements
+    setInterval(updateCountdowns, 1000);
+    document.addEventListener('DOMContentLoaded', updateCountdowns);
+function customgettime(time)
+{
+    if(time === "1 day")
+    {
+        const hour = 24;
+        const min = 0;
+        const sec = 0;
+        return { hour, min, sec };
+    }
+    if(time === "3 days")
+    {
+        const hour = 72;
+        const min = 0;
+        const sec = 0;
+        return { hour, min, sec };
+    }
+    if(time === "7 days")
+    {
+        const hour = 168;
+        const min = 0;
+        const sec = 0;
+        return { hour, min, sec };
+    }
+    if(time === "15 days")
+    {
+        const hour = 360;
+        const min = 0;
+        const sec = 0;
+        return { hour, min, sec };
+    }
+
+}
+
+    </script>
+</html>

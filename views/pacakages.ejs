@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bidtobuycars – Plans & Pricing</title>
+    <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="/header-all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            background-color: #f8f9fa;
+             }
+
+        /* PRICING SECTION STYLES */
+        main.pricing-section {
+            text-align: center;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pricing-section h1 {
+            font-size: 2.2rem;
+            margin-top: 10px;
+            color: #02511A;
+        }
+
+        .subtext {
+            color: #4F4F4F;
+            margin: 10px auto 25px;
+            width: 60%;
+            text-align: center;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .plans {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            width: 320px;
+            min-height: 420px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card.active {
+            box-shadow: 0 4px 16px rgba(2, 81, 26, 0.25);
+            border: 2px solid #02511A;
+        }
+
+        .active-badge {
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: #02511A;
+            color: white;
+            padding: 5px 35px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+        }
+
+        .description {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #666666;
+            margin: 5px 0 10px;
+        }
+
+        .card-heading {
+            text-align: start;
+            width: 100%;
+        }
+
+        .plan-card h2 {
+            padding-bottom: 2px;
+            font-size: 1.3rem;
+            color: #02511A;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #02511A;
+            margin: 8px 0;
+        }
+
+        .price span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .save-note {
+            font-size: 0.8rem;
+            color: green;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .plan-card ul {
+            list-style: none;
+            text-align: left;
+            margin: 12px 0;
+            padding: 0;
+            font-size: 0.85rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .plan-card li::before {
+            content: '';
+            display: inline-block;
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2302511A'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: top;
+        }
+
+        .plan-card li {
+            padding: 5px 0;
+            display: flex;
+            align-items: start;
+        }
+
+        .items-left {
+            background-color: #e8f5e9;
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            font-weight: 500;
+            color: #2e7d32;
+            display: inline-block;
+        }
+
+        .items-left.zero {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .subscribe-btn {
+            background-color: #02511A;
+            color: white;
+            padding: 12px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 24px;
+            font-size: 1rem;
+            width: 100%;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #034620;
+        }
+
+        .subscribe-btn:active {
+            transform: translateY(1px);
+        }
+
+        .cancel-btn {
+            background-color: transparent;
+            color: #000000;
+            padding: 12px 24px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            width: 100%;
+            border: 2px solid #6c6c6c;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cancel-btn:hover {
+            background-color: #ebebeb;
+            border-color: #000000;
+            color: #000000;
+        }
+
+        .topup-btn {
+            background-color: #ffd813;
+            color: rgb(0, 0, 0);
+            padding: 12px 24px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            width: 100%;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 193, 64, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .topup-btn:hover {
+            background-color: #ffbf00;
+            box-shadow: 0 4px 12px rgba(255, 216, 19, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .topup-btn::before {
+            content: '\f067';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+
+        @media (max-width: 999px) {
+            .subtext {
+                width: 90%;
+            }
+
+            .plans {
+                gap: 18px;
+            }
+
+            .plan-card {
+                width: 300px;
+                padding: 20px;
+                min-height: 400px;
+            }
+
+            .plan-card h2 {
+                font-size: 1.2rem;
+            }
+
+            .price {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-section h1 {
+                font-size: 1.9rem;
+            }
+
+            .plan-card {
+                width: 100%;
+                max-width: 350px;
+                min-height: 380px;
+            }
+
+            .plans {
+                gap: 15px;
+            }
+
+            .subtext {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .pricing-section {
+                padding: 20px 10px;
+            }
+
+            .pricing-section h1 {
+                font-size: 1.7rem;
+            }
+
+            .subtext {
+                width: 95%;
+                font-size: 0.85rem;
+                margin: 8px auto 20px;
+            }
+
+            .plan-card {
+                padding: 18px;
+                min-height: 370px;
+                border-radius: 16px;
+            }
+
+            .plan-card h2 {
+                font-size: 1.15rem;
+            }
+
+            .price {
+                font-size: 1.3rem;
+            }
+
+            .plan-card ul {
+                font-size: 0.8rem;
+                margin: 10px 0;
+            }
+
+            .subscribe-btn,
+            .cancel-btn,
+            .topup-btn {
+                padding: 9px 16px;
+                font-size: 0.85rem;
+            }
+
+            .button-group {
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("header-all") %>
+        <main class="pricing-section">
+            <h1>Plans & Pricing</h1>
+            <p class="subtext">
+                Pick a plan that fits your selling goals. Each subscription gives you access to list items, manage
+                sales, and grow your reach. Simple, transparent, and flexible.
+                No hidden fees.
+            </p>
+
+            <div class="plans" id="pricingPlans">
+                <!-- Plans will be loaded dynamically -->
+            </div>
+        </main>
+
+        <script>
+            // Configuration and state management
+            const AppState = {
+                isLoggedIn: true,
+                userPlan: null,
+                currentSubscription: null,
+                itemsUsed: {
+                    monthly: 0,
+                    quarterly: 0,
+                    yearly: 0
+                },
+                // Server-side subscription data will be fetched
+                pricingPlans: [
+                    {
+                        id: 'monthly',
+                        title: 'Monthly Access',
+                        description: 'Best for testing the platform',
+                        price: '₹1999',
+                        period: 'month',
+                        saveNote: 'No long-term commitment',
+                        totalItems: 100,
+                        extraItemPrice: '₹199',
+                        features: [
+                            'List up to 100 items/month',
+                            'Secure, Verified Transactions',
+                            'Full seller tools & support',
+                            'Beyond limit: ₹199 per listing',
+                            'Flexible plan with easy upgrade anytime'
+                        ]
+                    },
+                    {
+                        id: 'quarterly',
+                        title: 'Quarterly Access',
+                        description: 'Balanced plan for steady sellers',
+                        price: '₹4999',
+                        period: '3 months',
+                        saveNote: 'Save 17% compared to monthly',
+                        totalItems: 500,
+                        extraItemPrice: '₹149',
+                        features: [
+                            'List up to 500 items/3 months',
+                            'Secure, Verified Transactions',
+                            'Full seller tools & support',
+                            'Beyond limit: ₹149 per listing',
+                            'Host your seller dashboard on your own domain'
+                        ]
+                    },
+                    {
+                        id: 'yearly',
+                        title: 'Yearly Access',
+                        description: 'Best value for high-volume sellers',
+                        price: '₹17999',
+                        period: '12 months',
+                        saveNote: 'Save 25% compared to monthly',
+                        totalItems: 1800,
+                        extraItemPrice: '₹149',
+                        features: [
+                            'List up to 1800 items/year',
+                            'Secure, Verified Transactions',
+                            'Full seller tools & support',
+                            'Beyond limit: ₹149 per listing',
+                            'Host your seller dashboard on your own domain'
+                        ]
+                    }
+                ]
+            };
+
+            // DOM Element Cache
+            const ElementCache = {
+                init() {
+                    this.cache = {
+                        pricingPlans: document.getElementById("pricingPlans")
+                    };
+                    return this.cache;
+                },
+
+                get(elementId) {
+                    return this.cache[elementId];
+                }
+            };
+
+            // Pricing Controller for managing pricing plans
+            const PricingController = {
+                init() {
+                    this.elements = ElementCache.init();
+                    this.loadUserSubscription();
+                    this.attachEventListeners();
+                },
+
+                async loadUserSubscription() {
+                    try {
+                        // Use server-side data if available
+                        if (AppState.serverSubscriptionStatus && AppState.serverSubscriptionStatus.hasActiveSubscription) {
+                            AppState.currentSubscription = AppState.serverSubscriptionStatus;
+                            AppState.userPlan = AppState.serverSubscriptionStatus.planId;
+                            AppState.itemsUsed[AppState.serverSubscriptionStatus.planId] = AppState.serverSubscriptionStatus.itemsUsed;
+                        } else {
+                            // Fallback to API call
+                            const response = await fetch('/api/subscription/current', {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                credentials: 'include'
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success && data.subscription) {
+                                AppState.currentSubscription = data.subscription;
+                                AppState.userPlan = data.subscription.planId;
+                                AppState.itemsUsed[data.subscription.planId] = data.subscription.itemsUsed;
+                            }
+                        }
+
+                        this.renderPricingPlans();
+                    } catch (error) {
+                        console.error('Error loading subscription:', error);
+                        this.renderPricingPlans();
+                    }
+                },
+
+                attachEventListeners() {
+                    // Add event delegation for subscription buttons
+                    this.elements.pricingPlans?.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('subscribe-btn')) {
+                            this.handleSubscription(e.target.dataset.planId);
+                        } else if (e.target.classList.contains('cancel-btn')) {
+                            this.handleCancelSubscription(e.target.dataset.planId);
+                        } else if (e.target.classList.contains('topup-btn')) {
+                            this.handleTopUp(e.target.dataset.planId);
+                        }
+                    });
+                },
+
+                renderPricingPlans() {
+                    if (!this.elements.pricingPlans) return;
+
+                    const plansHTML = AppState.pricingPlans.map(plan => {
+                        const isActive = AppState.userPlan === plan.id;
+                        const itemsUsed = AppState.itemsUsed[plan.id] || 0;
+                        const itemsLeft = Math.max(0, plan.totalItems - itemsUsed);
+                        const hasItemsLeft = itemsLeft > 0;
+
+                        return `
+                    <div class="plan-card ${isActive ? 'active' : ''}" data-plan="${plan.id}">
+                        ${isActive ? '<div class="active-badge">ACTIVE</div>' : ''}
+                        <div class="card-heading">
+                            <h2>${plan.title}</h2>
+                            <p class="description">${plan.description}</p>
+                        </div>
+
+                        <p class="price">${plan.price} / ${plan.period}</p>
+                        <p class="save-note">${plan.saveNote}</p>
+                        
+                        ${isActive ? `
+                            <div class="items-left ${itemsLeft === 0 ? 'zero' : ''}">
+                                ${itemsLeft} of ${plan.totalItems} items remaining
+                            </div>
+                        ` : ''}
+                        
+                        <ul>
+                            ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                        
+                        <div class="button-group">
+                            ${isActive ? `
+                                ${itemsLeft === 0 ? `
+                                    <button class="topup-btn" data-plan-id="${plan.id}">
+                                        Buy More Items (${plan.extraItemPrice} each)
+                                    </button>
+                                ` : ''}
+                                <button class="cancel-btn" data-plan-id="${plan.id}">Cancel Subscription</button>
+                            ` : `
+                                <button class="subscribe-btn" data-plan-id="${plan.id}" >
+                                    ${AppState.userPlan ? 'Upgrade Plan' : 'Subscribe Now'}
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `}).join('');
+
+                    this.elements.pricingPlans.innerHTML = plansHTML;
+                },
+
+                async handleSubscription(planId) {
+                    const plan = AppState.pricingPlans.find(p => p.id === planId);
+                    if (plan) {
+                        const button = document.querySelector(`[data-plan-id="${planId}"]`);
+                        button.textContent = 'Processing...';
+                        button.disabled = true;
+
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/api/subscription/create-order';
+
+                        const planIdInput = document.createElement('input');
+                        planIdInput.type = 'hidden';
+                        planIdInput.name = 'planId';
+                        planIdInput.value = planId;
+                        form.appendChild(planIdInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                },
+
+                async handleTopUp(planId) {
+                    const plan = AppState.pricingPlans.find(p => p.id === planId);
+                    if (plan) {
+                        try {
+                            const quantity = prompt(`How many extra items would you like to purchase? (₹${plan.extraItemPrice} each)`);
+
+                            if (!quantity || isNaN(quantity) || quantity <= 0) {
+                                return;
+                            }
+
+                            const response = await fetch('/api/subscription/purchase-extra-items', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                credentials: 'include',
+                                body: JSON.stringify({ quantity: parseInt(quantity) })
+                            });
+
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else {
+                                const data = await response.json();
+                                if (data.success) {
+                                    // This part will likely not be reached due to the redirect
+                                } else {
+                                    throw new Error(data.error || 'Failed to create extra items order');
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error purchasing extra items:', error);
+                            alert('Failed to purchase extra items. Please try again.');
+                        }
+                    }
+                },
+
+                
+
+                openRazorpayExtraItems(order, quantity, plan) {
+                    const options = {
+                        key: 'rzp_test_xxxxxxxx', // Replace with your actual Razorpay key
+                        amount: order.amount,
+                        currency: order.currency,
+                        name: 'BidToBuyCars',
+                        description: `${quantity} Extra Items for ${plan.title}`,
+                        order_id: order.id,
+                        handler: async (response) => {
+                            try {
+                                // Verify payment
+                                const verifyResponse = await fetch('/api/subscription/verify-extra-items', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    credentials: 'include',
+                                    body: JSON.stringify({
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_signature: response.razorpay_signature,
+                                        quantity: quantity
+                                    })
+                                });
+
+                                const verifyData = await verifyResponse.json();
+
+                                if (verifyData.success) {
+                                    // Update state
+                                    AppState.currentSubscription = verifyData.subscription;
+                                    AppState.itemsUsed[plan.id] = plan.totalItems - verifyData.subscription.remainingItems;
+
+                                    // Re-render plans
+                                    this.renderPricingPlans();
+
+                                    alert(`Payment successful! ${quantity} extra items have been added to your plan.`);
+                                } else {
+                                    throw new Error(verifyData.error || 'Payment verification failed');
+                                }
+                            } catch (error) {
+                                console.error('Error verifying payment:', error);
+                                alert('Payment verification failed. Please contact support.');
+                            }
+                        },
+                        prefill: {
+                            name: '',
+                            email: '',
+                            contact: ''
+                        },
+                        theme: { color: '#02511A' }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                }
+            };
+
+            // Application initialization
+            const App = {
+                init() {
+                    PricingController.init();
+                }
+            };
+
+            // Initialize app when DOM is loaded
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => App.init());
+            } else {
+                App.init();
+            }
+        </script>
+        <script src="/js/header-all.js"></script>
+        <%- include("footer") %>
+</body>
+
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist | NeedyBids</title>
+    <link rel="icon" href="/Photos/favicon-32x32.jpeg" type="image/png">
+
+    <!-- Header resources -->
+    <link rel="stylesheet" href="/header-all.css">
+    <link rel="stylesheet" href="/auction.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .wishlist-container {
+            max-width: 1300px;
+            margin: 0 ;
+            padding: 20px;
+        }
+
+        .wishlist-header {
+            margin-bottom: 25px;
+        }
+
+        .wishlist-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+
+        #wishlist-content {
+            display: flex;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-image {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .like-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border: none;
+            cursor: pointer;
+            z-index: 20;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            padding: 0;
+            outline: none;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .like-button i {
+            font-size: 22px;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        .like-button.liked i {
+            color: #ff0000;
+            animation: heartBeat 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes heartBeat {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .like-button:active {
+            transform: scale(0.85);
+        }
+
+        .like-button:hover i {
+            transform: scale(1.2);
+        }
+
+        .item-bid-info {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .time-info,
+        .price-info-price {
+            color: black;
+        }
+
+        .price-info-bid {
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .material-symbols-outlined {
+            font-size: 18px;
+            color: #2563eb;
+        }
+
+        .item-details {
+            padding: 15px;
+            position: relative;
+        }
+
+        .reserve-button {
+            background-color: #FF9E16;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 400;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .no-reserve-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 400;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 30px;
+            margin-bottom: 8px;
+        }
+
+        .item-description {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-location {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .empty-wishlist {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            margin: 40px auto;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .empty-wishlist img {
+            max-width: 200px;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .empty-wishlist h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .empty-wishlist p {
+            color: #868e96;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .continue-shopping {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #1d4ed8;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+            font-weight: 500;
+        }
+
+        .continue-shopping:hover {
+            background: #1d4ed8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .wishlist-container {
+                max-width: 100%;
+                margin: 0 ;
+                padding: 20px;
+                align-items: start;
+                justify-content: start;
+            }
+        }
+
+        @media (max-width: 799px) {
+            .wishlist-container {
+                max-width: 98%;
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .wishlist-container {
+                padding: 15px;
+                max-width: 98%;
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('header-all') %>
+
+        <div class="main-content">
+            <div class="wishlist-container">
+                <div class="wishlist-header" id="wishlist-header" style="display: none;">
+                    <h1 class="wishlist-title">My Wishlist</h1>
+                </div>
+
+                <div id="wishlist-content">
+                    <!-- Items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // --- Robust Countdown Timer for Wishlist Items ---
+            function parseDurationToSeconds(duration) {
+                if (!duration) return 0;
+                duration = duration.toLowerCase();
+                let total = 0;
+                const dayMatch = duration.match(/(\d+)\s*day/);
+                const hourMatch = duration.match(/(\d+)\s*hour/);
+                const minMatch = duration.match(/(\d+)\s*min/);
+                if (dayMatch) total += parseInt(dayMatch[1], 10) * 86400;
+                if (hourMatch) total += parseInt(hourMatch[1], 10) * 3600;
+                if (minMatch) total += parseInt(minMatch[1], 10) * 60;
+                return total;
+            }
+
+            function formatTimeLeft(seconds) {
+                if (seconds < 0) seconds = 0;
+                const d = Math.floor(seconds / 86400);
+                const h = Math.floor((seconds % 86400) / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                if (d > 0) {
+                    return `${d}d ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                } else {
+                    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+            }
+
+            function updateAllCountdowns() {
+                const now = Date.now();
+                document.querySelectorAll('.time-remaining').forEach(function (span) {
+                    const durationStr = span.getAttribute('data-duration');
+                    const startStr = span.getAttribute('data-start');
+                    const durationSec = parseDurationToSeconds(durationStr);
+                    let startTime = Date.parse(startStr);
+                    let endTime;
+                    if (!isNaN(startTime)) {
+                        endTime = startTime + durationSec * 1000;
+                    } else {
+                        // Fallback: start now
+                        endTime = now + durationSec * 1000;
+                    }
+                    let secondsLeft = Math.floor((endTime - now) / 1000);
+                    if (secondsLeft <= 0) {
+                        span.textContent = 'Ended';
+                        span.classList.add('ended');
+                    } else {
+                        span.textContent = formatTimeLeft(secondsLeft);
+                        span.classList.remove('ended');
+                    }
+                });
+            }
+
+            async function fetchWishlist() {
+                const userId = "<%= user._id %>";
+                const container = document.getElementById('wishlist-content');
+
+                try {
+                    const response = await fetch(`/wishlist/${userId}`, {
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        throw new Error(data.error || 'Failed to load wishlist');
+                    }
+
+                    const wishlistHeader = document.getElementById('wishlist-header');
+
+                    if (data.items.length === 0) {
+                        wishlistHeader.style.display = 'none';
+                        container.className = ''; // Remove the items-grid class
+                        container.innerHTML = `
+                        <div class="empty-wishlist">
+                            <img src="/Photos/empty_wishlist.jpg" alt="Empty Wishlist">
+                            <h2>Your Wishlist is Empty</h2>
+                            <p>Add items you like to your wishlist. Review them anytime and easily move them to the bag.</p>
+                            <a href="/" class="continue-shopping">Continue Shopping</a>
+                        </div>
+                    `;
+                        return;
+                    }
+
+                    wishlistHeader.style.display = 'block';
+                    container.className = 'items-grid';
+                    container.innerHTML = data.items.map(item => `
+                    <div class="item-card" onclick="window.location.href='/item/${item.modelName || 'cars'}/${item._id}'">
+                        <div class="item-image">
+                            <img src="${item.photo1 || 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop'}" alt="${item.adTitle || item.model || 'Item'}">
+                            <button class="like-button liked" 
+                                onclick="removeFromWishlist(event, this)" 
+                                data-item-id="${item._id}"
+                                data-model-name="${item.modelName || ''}"
+                                aria-label="Remove from favorites">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <div class="item-bid-info">
+                                <div class="time-info">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    <span class="time-remaining" data-duration="${item.auctionDuration || '1 day'}" data-start="${item.createdAt || new Date().toISOString()}"></span>
+                                </div>
+                                <div class="price-info">
+                                    <div class="price-info-bid">Bid </div>
+                                    <div class="price-info-price">₹${item.basePrice || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-details">
+                            <div class="item-title">
+                                ${item.adTitle || item.model || item.itemTitle || 'Item'}
+                            </div>
+                            <div class="item-description">
+                                ${item.auctionType === 'Reserve' ?
+                            '<div class="reserve-button">RESERVE</div>' :
+                            '<div class="no-reserve-button">NO RESERVE</div>'
+                        }
+                                ${item.description || item.desription || ''}
+                            </div>
+                            <div class="item-location">
+                                ${item.city || ''}${item.state ? ', ' + item.state : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                    // Start the countdown timers
+                    updateAllCountdowns();
+                    setInterval(updateAllCountdowns, 1000);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    container.innerHTML = `
+                    <div class="empty-wishlist">
+                        <h2>Error Loading Wishlist</h2>
+                        <p>${error.message}</p>
+                        <button onclick="fetchWishlist()" class="continue-shopping">Try Again</button>
+                    </div>
+                `;
+                }
+            }
+
+            async function removeFromWishlist(event, button) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const itemId = button.getAttribute('data-item-id');
+                const modelName = button.getAttribute('data-model-name');
+                const userId = "<%= user._id %>";
+
+                try {
+                    const response = await fetch('/wishlist/remove', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId, itemId, modelName }),
+                        credentials: 'include'
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Show confirmation message
+                        showInPageAlert('Item removed from wishlist');
+
+                        // Refresh the wishlist to show updated items
+                        setTimeout(fetchWishlist, 500);
+                    } else {
+                        throw new Error(data.error || 'Failed to remove item');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showInPageAlert('Failed to remove item from wishlist');
+                }
+            }
+
+            function showInPageAlert(message) {
+                // Remove any existing notification
+                document.querySelectorAll('.notification.signin').forEach(n => n.remove());
+
+                const note = document.createElement('div');
+                note.className = 'signin-popup';
+                note.innerHTML = message;
+                note.style.position = 'fixed';
+                note.style.top = '24px';
+                note.style.left = '50%';
+                note.style.transform = 'translateX(-50%)';
+                note.style.background = '#D41717';
+                note.style.color = '#fff';
+                note.style.padding = '16px 32px';
+                note.style.borderRadius = '8px';
+                note.style.fontSize = '1.1rem';
+                note.style.zIndex = '9999';
+                note.style.boxShadow = '0 2px 8px #0002';
+                document.body.appendChild(note);
+
+                setTimeout(() => note.remove(), 2000);
+            }
+
+            // Load wishlist items when page loads
+            document.addEventListener('DOMContentLoaded', fetchWishlist);
+        </script>
+
+        <script src="/js/header-all.js"></script>
+        <%- include('footer') %>
+</body>
+
+</html>

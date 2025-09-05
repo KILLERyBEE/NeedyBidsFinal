@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Your Product</title>
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        .top-bar {
+            height: 60px;
+            width: 100%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-bar i {
+            font-size: 20px;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .main-pane {
+            max-width: 1000px;
+            margin: 20px auto;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            width: calc(100% - 40px);
+        }
+        
+        .sub-heading {
+            font-size: 22px;
+            font-weight: 600;
+            text-align: left;
+            padding: 16px;
+            padding-left: 20px;
+            color: rgb(25, 35, 2);
+        }
+      
+        .wrapper {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .left-pane {
+            flex: 1;
+            background-color: #fff;
+            overflow: hidden;
+            border: 1px solid #e4e4e4;
+            width: 100%;
+        }
+
+        .right-pane {
+            flex: 1;
+            background-color: #fff;
+            overflow: hidden;
+            border: 1px solid #e4e4e4;
+            display: none;
+        }
+
+        .left-pane .category {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e4e4e4;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .left-pane .category:hover {
+            background-color: #f0f0f0;
+        }
+
+        .left-pane .category .label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .left-pane .category .label i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .left-pane .category .fa-angle-right {
+            margin-left: 10px;
+        }
+
+        .right-pane .subcategory a {
+            display: block;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e4e4e4;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .right-pane .subcategory a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .main-pane {
+                margin: 10px auto;
+                width: calc(100% - 20px);
+            }
+            
+            .sub-heading {
+                padding-left: 15px;
+                font-size: 20px;
+            }
+            
+            .wrapper {
+                flex-direction: column;
+            }
+            
+            .left-pane .category {
+                padding: 15px;
+            }
+            
+            .left-pane .category .label i {
+                width: 20px;
+                font-size: 16px;
+            }
+            
+            .category-name {
+                font-size: 16px;
+            }
+        }
+
+        /* Subcategory page styles */
+        .subcategory-page {
+            display: none;
+        }
+        
+        .subcategory-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e4e4e4;
+            background-color: #f9f9f9;
+        }
+        
+        .subcategory-header i {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .subcategory-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .subcategory-list {
+            background-color: white;
+        }
+        
+        .subcategory-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e4e4e4;
+            display: block;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .subcategory-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Categories Page -->
+    <div class="categories-page">
+        <div class="top-bar">
+            <i class="fas fa-arrow-left" onclick="history.back()"></i>
+            <span style="font-weight: 500; font-size: 20px;">List Your Product</span>
+        </div>
+
+        <div class="main-pane">
+            <div class="sub-heading">
+                <div class="subtext">Choose a Category</div> 
+            </div>
+            <div class="wrapper">
+                <div class="left-pane">
+                    <div class="category" onclick="showSubcategories('vehicles', 'Vehicles')">
+                        <div class="label"><i class="fas fa-car"></i> <span class="category-name">Vehicles</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('property', 'Property')">
+                        <div class="label"><i class="fas fa-building"></i> <span class="category-name">Property</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('electronics', 'Electronics & Appliances')">
+                        <div class="label"><i class="fas fa-tv"></i> <span class="category-name">Electronics & Appliances</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('mobiles', 'Mobiles')">
+                        <div class="label"><i class="fas fa-mobile-alt"></i> <span class="category-name">Mobiles</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('furniture', 'Furniture')">
+                        <div class="label"><i class="fas fa-couch"></i> <span class="category-name">Furniture</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('fashion', 'Fashion')">
+                        <div class="label"><i class="fas fa-tshirt"></i> <span class="category-name">Fashion</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('pets', 'Pets')">
+                        <div class="label"><i class="fas fa-dog"></i> <span class="category-name">Pets</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                    <div class="category" onclick="showSubcategories('spares', 'Spare Parts')">
+                        <div class="label"><i class="fas fa-tools"></i> <span class="category-name">Spare Parts</span></div>
+                        <i class="fas fa-angle-right"></i>
+                    </div>
+                </div>
+
+                <div class="right-pane">
+                    <div id="subcategories" class="subcategory"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subcategories Page (hidden by default) -->
+    <div class="subcategory-page" id="subcategoryPage">
+        <div class="top-bar">
+            <i class="fas fa-arrow-left" onclick="goBackToCategories()"></i>
+            <span style="font-weight: 500; font-size: 20px;" id="subcategoryPageTitle"></span>
+        </div>
+
+        <div class="main-pane">
+            <div id="subcategoryList" class="subcategory-list"></div>
+        </div>
+    </div>
+<%- include('../footer') %>
+    <script>
+        const subMap = {
+            vehicles: [
+                { text: 'Cars', link: 'forms/cars.html' },
+                { text: 'Bikes', link: 'forms/bikes.html' },
+                { text: 'Scooters', link: 'forms/scooters.html' },
+                { text: 'Bicycles', link: 'forms/bicycles.html' },
+                { text: 'Commercial Vehicles', link: 'forms/commercial-vehicles.html' }
+            ],
+            property: [
+                { text: 'Homes & Apartments', link: 'forms/homes.html' },
+                { text: 'Lands & Plots', link: 'forms/lands.html' },
+                { text: 'Shops', link: 'forms/shops.html' },
+                { text: 'Office', link: 'forms/office.html' }
+            ],
+            electronics: [
+                { text: 'TV & Audio', link: 'forms/tv.html' },
+                { text: 'Kitchen Appliances', link: 'forms/kitchen.html' },
+                { text: 'Computers & Laptops', link: 'forms/computers.html' },
+                { text: 'Cameras & Lenses', link: 'forms/cameras.html' },
+                { text: 'Games & Entertainment', link: 'forms/games.html' },
+                { text: 'Fridges', link: 'forms/fridge.html' },
+                { text: 'Air Conditioners', link: 'forms/ac.html' },
+                { text: 'Washing Machines', link: 'forms/washing.html' },
+                { text: 'Computer Accessories', link: 'forms/accessories.html' }
+            ],
+            mobiles: [
+                { text: 'Mobile Phones', link: 'forms/mobiles.html' },
+                { text: 'Tablets', link: 'forms/tablets.html' },
+                { text: 'Mobile Accessories', link: 'forms/mobile-accessories.html' }
+            ],
+            furniture: [
+                { text: 'Sofa & Dining', link: 'forms/sofa.html' },
+                { text: 'Beds & Wardrobes', link: 'forms/beds.html' },
+                { text: 'Home Decor & Garden', link: 'forms/decor.html' },
+                { text: 'Kids Furniture', link: 'forms/kids-furniture.html' },
+                { text: 'Other Household Items', link: 'forms/others.html' }
+            ],
+            fashion: [
+                { text: 'Men', link: 'forms/men.html' },
+                { text: 'Women', link: 'forms/women.html' },
+                { text: 'Kids', link: 'forms/kids.html' }
+            ],
+            pets: [
+                { text: 'Fish Aquarium & Accessories', link: 'forms/aquarium.html' },
+                { text: 'Pet Accessories', link: 'forms/pet-accessories.html' },
+                { text: 'Books, Sports Accessories', link: 'forms/books-sports.html' }
+            ],
+            spares: [
+                { text: 'Original Parts', link: 'forms/original.html' },
+                { text: 'Aftermarket Parts', link: 'forms/aftermarket.html' }
+            ]
+        };
+
+        // For desktop - shows subcategories in right pane
+        function showSub(category) {
+            if (window.innerWidth > 768) {
+                const container = document.getElementById('subcategories');
+                container.innerHTML = '';
+                subMap[category].forEach(item => {
+                    const a = document.createElement('a');
+                    a.href = item.link;
+                    a.textContent = item.text;
+                    container.appendChild(a);
+                });
+                document.querySelector('.right-pane').style.display = 'block';
+            }
+        }
+
+        // For mobile/tablet - shows subcategories in new view
+        function showSubcategories(category, categoryName) {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.categories-page').style.display = 'none';
+                document.getElementById('subcategoryPage').style.display = 'block';
+                document.getElementById('subcategoryPageTitle').textContent = categoryName;
+                
+                const container = document.getElementById('subcategoryList');
+                container.innerHTML = '';
+                
+                subMap[category].forEach(item => {
+                    const a = document.createElement('a');
+                    a.href = item.link;
+                    a.className = 'subcategory-item';
+                    a.textContent = item.text;
+                    container.appendChild(a);
+                });
+            } else {
+                showSub(category);
+            }
+        }
+
+        function goBackToCategories() {
+            document.querySelector('.categories-page').style.display = 'block';
+            document.getElementById('subcategoryPage').style.display = 'none';
+        }
+
+        // Initialize - hide right pane on mobile
+        window.addEventListener('load', function() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.right-pane').style.display = 'none';
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.querySelector('.right-pane').style.display = 'block';
+            } else {
+                document.querySelector('.right-pane').style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>

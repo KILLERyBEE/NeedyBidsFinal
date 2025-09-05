@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Page</title>
+  <link rel="stylesheet" href="/header.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <%- include('header') %>
+  <main style="padding: 40px 0; text-align: center;">
+  <h1>Welcome to the Demo Page</h1>
+  <p>This is a simple demo page that includes the header and footer partials.</p>
+  <div id="active-accessory-cards" style="display:flex;flex-wrap:wrap;gap:32px;justify-content:center;margin-top:40px;"></div>
+  <script>
+    function durationStringToDays(duration) {
+      if (!duration) return 0;
+      const match = duration.match(/(\d+)\s*day/);
+      return match ? parseInt(match[1], 10) : 0;
+    }
+
+    function isAuctionActive(item) {
+      if (!item.createdAt || !item.auctionDuration) return false;
+      const created = new Date(item.createdAt);
+      const days = durationStringToDays(item.auctionDuration);
+      if (!days) return false;
+      const end = new Date(created.getTime() + days * 24 * 60 * 60 * 1000);
+      return end > new Date();
+    }
+
+    // List of endpoints and how to map their fields to a common card
+    const endpoints = [
+      { url: '/accessories', title: i => i.adTitle || i.productType || 'Accessory', brand: i => i.brand, seller: i => i.sellerName, username: i => i.username },
+      { url: '/cars', title: i => i.adTitle || i.model || 'Car', brand: i => i.brand, seller: i => i.sellerName, username: i => i.username },
+      { url: '/games', title: i => i.adTitle || i.productType || 'Game', brand: i => i.brand, seller: i => i.sellerName, username: i => i.username },
+      { url: '/kitchen', title: i => i.adTitle || i.applianceType || 'Kitchen', brand: i => i.brand, seller: i => i.sellerName, username: i => i.username },
+      { url: '/tv', title: i => i.adTitle || i.category || 'TV', brand: i => i.brand, seller: i => i.sellerName, username: i => i.username },
+      { url: '/decor', title: i => i.adTitle || i.itemType || 'Decor', brand: i => i.material, seller: i => i.sellerName, username: i => i.username },
+      { url: '/aquarium', title: i => i.itemTitle || 'Aquarium', brand: i => '', seller: i => i.sellerName, username: i => i.username },
+      { url: '/books-sports', title: i => i.itemTitle || 'Book/Sport', brand: i => '', seller: i => i.sellerName, username: i => i.username },
+      { url: '/pet-accessories', title: i => i.itemTitle || 'Pet Accessory', brand: i => '', seller: i => i.sellerName, username: i => i.username },
+      { url: '/aftermarket', title: i => i.itemTitle || 'Aftermarket', brand: i => '', seller: i => i.sellerName, username: i => i.username },
+      { url: '/original', title: i => i.itemTitle || 'Original', brand: i => '', seller: i => i.sellerName, username: i => i.username },
+    ];
+
+    async function fetchAllActiveItems() {
+      try {
+        const allItems = [];
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep.url);
+            const items = await res.json();
+            if (Array.isArray(items)) {
+              for (const item of items) {
+                if (isAuctionActive(item)) {
+                  allItems.push({
+                    ...item,
+                    _title: ep.title(item),
+                    _brand: ep.brand(item),
+                    _seller: ep.seller(item),
+                    _username: ep.username(item)
+                  });
+                }
+              }
+            }
+          } catch (e) { /* skip endpoint on error */ }
+        }
+        if (allItems.length === 0) {
+          document.getElementById('active-accessory-cards').innerHTML = '<p>No active auctions at the moment.</p>';
+          return;
+        }
+        // Sort by createdAt descending
+        allItems.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const cards = allItems.map(item => `
+          <div style="background:#fff;box-shadow:0 2px 8px #0001;border-radius:12px;max-width:400px;width:100%;padding:24px;text-align:left;">
+            <img src="${item.photo1}" alt="${item._title}" style="width:100%;height:180px;object-fit:cover;border-radius:8px 8px 0 0;">
+            <h2 style="margin:16px 0 8px 0;">${item._title}</h2>
+            <p style="color:#555;margin-bottom:8px;">Brand: ${item._brand || '-'}</p>
+            <p style="color:#555;margin-bottom:8px;">Base Price: ₹${item.basePrice}</p>
+            <p style="color:#555;margin-bottom:8px;">Auction Duration: ${item.auctionDuration}</p>
+            <p style="color:#555;margin-bottom:8px;">Seller: ${item._seller}</p>
+            <a href="/chat?seller=${encodeURIComponent(item._username)}" class="chat-seller-btn" style="display:inline-block;margin-top:16px;padding:10px 22px;background:#02511A;color:#fff;border-radius:8px;font-size:1rem;text-decoration:none;transition:background 0.2s;">Chat with Seller</a>
+          </div>
+        `).join('');
+        document.getElementById('active-accessory-cards').innerHTML = cards;
+      } catch (err) {
+        document.getElementById('active-accessory-cards').innerHTML = '<p style="color:red;">Error loading auction items.</p>';
+      }
+    }
+    fetchAllActiveItems();
+    setInterval(fetchAllActiveItems, 10000); // Poll every 10 seconds
+  </script>
+  </main>
+  <%- include('footer') %>
+  <script src="/js/header.js"></script>
+</body>
+</html>

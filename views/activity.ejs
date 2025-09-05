@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Needybids – My Activity</title>
+  <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inconsolata&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/header-all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --brand: #02511A;
+      --brand-dark: #078454;
+      --text: #000000;
+      --muted: #6b7280;
+      --bg: #f9fafb;
+      --border: #e5e7eb;
+      --surface: #ffffff;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 4px 12px rgba(0, 0, 0, .04);
+      --table-row-hover: #f3f4f6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body {
+      padding-top: 55px;
+      font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', sans-serif;
+      min-height: 100vh;
+      position: relative;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    .logo-container {
+      max-width: 160px;
+      min-width: 100px;
+    }
+
+    .logo-container img {
+      width: 100%;
+      height: auto;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 16px;
+    }
+
+    nav a,
+    .sidebar-contents a {
+      text-decoration: none;
+      color: black;
+      font-size: 1rem;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .searchbox {
+      position: relative;
+    }
+
+    .searchbox input {
+      height: 36px;
+      padding-left: 36px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: clamp(150px, 25vw, 220px);
+    }
+
+    .searchbox i {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      color: gray;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hamburger,
+    .mobile-search {
+      display: none;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .notification {
+      position: relative;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .notification::after {
+      content: "25";
+      position: absolute;
+      top: -5px;
+      right: -8px;
+      background: red;
+      color: white;
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 10px;
+    }
+
+    .sign-in {
+      padding: 8px 14px;
+      background: #02511A;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 200px;
+      height: 100dvh;
+      background: #fff;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s;
+      z-index: 1000;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar ul {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+      align-items: start;
+      padding: 0;
+    }
+
+    .sidebar-contents {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar li {
+      width: 100%;
+      padding: 12px 24px 12px 10px;
+    }
+
+    .sidebar li:hover {
+      background-color: #ccc;
+    }
+
+    .search-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: white;
+      z-index: 1001;
+      padding: 20px;
+    }
+
+    .search-overlay.active {
+      display: block;
+    }
+
+    .search-overlay input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .close-search {
+      font-size: 24px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .logout,
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1rem;
+    }
+
+    .logout {
+      padding-left: 12px;
+      gap: 20px;
+      color: red;
+    }
+
+    .username {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .profile img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: solid 2px black;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .sidebar .close-btn {
+      font-size: 22px;
+      cursor: pointer;
+      align-self: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mobile {
+      display: none;
+    }
+
+    .desktop {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 1000px) {
+
+      nav ul,
+      .searchbox,
+      .sign-in.desktop-only {
+        display: none;
+      }
+
+      .hamburger,
+      .mobile-search,
+      .sign-in.mobile-only {
+        display: block;
+      }
+
+      .left,
+      .right {
+        gap: 20px;
+      }
+
+      .desktop {
+        display: none;
+      }
+
+      .mobile {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Main content styles */
+    main {
+      flex: 1;
+      padding: 20px 4%;
+      padding-bottom: 250px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 1.5rem;
+      margin: 1.5rem 0 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tablink {
+      position: relative;
+      padding: .75rem 0;
+      color: var(--muted);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .tablink:hover {
+      color: var(--brand-dark);
+    }
+
+    .tablink.active {
+      color: var(--brand);
+    }
+
+    .tablink.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 3px;
+      background: var(--brand);
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* Tab content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Filters */
+    .filters {
+      margin: 1rem 0 1.25rem;
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filters select {
+      padding: .55rem .8rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .filters label {
+      font-size: .875rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    /* Card that contains the table */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead tr {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    th,
+    td {
+      padding: .9rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: .925rem;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: var(--table-row-hover);
+    }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .status-pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-completed {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-active {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* Loading spinner */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid rgba(2, 81, 26, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--brand);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      table {
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      tr {
+        background: #fff;
+        margin: 0 0 1rem 0;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+
+      tr:hover {
+        background: #fff;
+      }
+
+      td {
+        border: none;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: .75rem 1rem;
+      }
+
+      td:last-child {
+        border-bottom: none;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--muted);
+        flex: 0 0 130px;
+        white-space: nowrap;
+      }
+
+      th:last-child,
+      td:last-child {
+        text-align: left;
+      }
+
+      .filters {
+        align-items: flex-start;
+      }
+    }
+
+    footer {
+      background-color: #02511A;
+      color: white;
+      padding: 2rem 1rem;
+      position: relative;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .social-icons {
+      display: inline;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+
+    .footer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .footer-section h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section li {
+      margin-bottom: 1.125rem;
+    }
+
+    .footer-section a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .footer-section a:hover {
+      text-decoration: underline;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .social-icons a {
+      color: white;
+      gap: 12px;
+    }
+
+    .social-icons a:hover {
+      color: #d1d5db;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 2rem;
+      color: #d1d5db;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 999px) {
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .footer-section {
+        margin-bottom: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('header-all') %>
+  <div class="sidebar" id="sidebar">
+    <i class="fa fa-xmark close-btn" onclick="UIController.toggleSidebar()"></i>
+    <ul class="sidebar-contents">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Auctions</a></li>
+      <li><a href="#">Sell a Car</a></li>
+      <li><a href="#">Wishlist</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">Team</a></li>
+    </ul>
+
+    <div class="sidebar-bottom">
+      <div class="profile" id="sidebarProfile">
+        <img src="images/pfp.jpg" alt="PFP">
+        <span class="username" id="usernameDisplay">Atharva</span>
+      </div>
+      <div class="logout" id="sidebarLogout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <span class="username">Logout</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-overlay" id="searchOverlay">
+    <i class="fa fa-xmark close-search" onclick="UIController.toggleSearch()"></i>
+    <input type="text" placeholder="Search for Cars, VIN, Auctions..." />
+  </div>
+
+  <main>
+    <div class="tabs" role="tablist">
+      <a class="tablink active" href="#" role="tab" aria-selected="true" data-tab="bids">My Bids</a>
+    </div>
+
+    <!-- My Bids Tab Content -->
+    <div id="bids-content" class="tab-content active">
+      <div class="filters" aria-label="Sort and Filters">
+        <label>
+          Sort order
+          <select id="bidsSort">
+            <option>Newest first</option>
+            <option>Oldest first</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+          </select>
+        </label>
+        <label>
+          Year
+          <select id="bidsYear">
+            <option>Any</option>
+            <option>2025</option>
+            <option>2024</option>
+            <option>2023</option>
+          </select>
+        </label>
+        <label>
+          Price
+          <select id="bidsPrice">
+            <option>Any</option>
+            <option>Below ₹5L</option>
+            <option>₹5L – ₹10L</option>
+            <option>₹10L – ₹20L</option>
+            <option>Above ₹20L</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card" role="region" aria-label="My bids table">
+        <table role="table">
+          <thead>
+            <tr role="row">
+              <th scope="col">ID</th>
+              <th scope="col">Product Name</th>
+              <th scope="col">Category</th>
+              <th scope="col">Date &amp; Time</th>
+              <th scope="col">Location</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="bidsTableBody">
+            <!-- Data will be loaded here dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  <!-- Listings tab removed -->
+  </main>
+
+  <%- include('footer') %>
+  <script src="/js/header-all.js"></script>
+  <script>
+    // Configuration and state management
+    const AppState = {
+      isLoggedIn: true,
+      currentTab: 'bids',
+      elements: {}
+    };
+
+    // DOM Element Cache for better performance
+    const ElementCache = {
+      init() {
+        this.cache = {
+          profilePic: document.getElementById("profilePic"),
+          sidebarProfile: document.getElementById("sidebarProfile"),
+          sidebarLogout: document.getElementById("sidebarLogout"),
+          notificationIcon: document.getElementById("notificationIcon"),
+          notificationIconMobile: document.getElementById("notificationIconMobile"),
+          signInBtn: document.getElementById("signInBtn"),
+          signInBtnMobile: document.getElementById("signInBtnMobile"),
+          sidebar: document.getElementById("sidebar"),
+          searchOverlay: document.getElementById("searchOverlay"),
+          // Tab elements
+          tabLinks: document.querySelectorAll('.tablink'),
+          bidsContent: document.getElementById('bids-content'),
+          // Bids-specific elements
+          bidsTableBody: document.getElementById('bidsTableBody'),
+          bidsSort: document.getElementById('bidsSort'),
+          bidsYear: document.getElementById('bidsYear'),
+          bidsPrice: document.getElementById('bidsPrice')
+        };
+        return this.cache;
+      },
+
+      get(elementId) {
+        return this.cache[elementId];
+      }
+    };
+
+    // Tab Controller for managing tab switching
+    const TabController = {
+      init() {
+        this.elements = ElementCache.cache;
+        this.attachTabEventListeners();
+      },
+
+      attachTabEventListeners() {
+        this.elements.tabLinks.forEach(tabLink => {
+          tabLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tabType = e.target.getAttribute('data-tab');
+            this.switchTab(tabType);
+          });
+        });
+      },
+
+      switchTab(tabType) {
+        // Update app state
+        AppState.currentTab = tabType;
+
+        // Update tab links visual state
+        this.elements.tabLinks.forEach(link => {
+          const isActive = link.getAttribute('data-tab') === tabType;
+          link.classList.toggle('active', isActive);
+          link.setAttribute('aria-selected', isActive.toString());
+        });
+
+        // Show/hide tab content
+        this.elements.bidsContent.classList.toggle('active', tabType === 'bids');
+        this.elements.listingsContent.classList.toggle('active', tabType === 'listings');
+
+        // Load data for the active tab
+        if (tabType === 'bids') {
+          BidsController.fetchAndDisplayBids();
+        } else if (tabType === 'listings') {
+          ListingsController.fetchAndDisplayListings();
+        }
+      }
+    };
+
+    // UI Controller for better organization
+    const UIController = {
+      init() {
+        this.elements = ElementCache.init();
+        this.updateUIBasedOnLoginState();
+      },
+
+      updateUIBasedOnLoginState() {
+        const { isLoggedIn } = AppState;
+        const elementsToShow = isLoggedIn
+          ? ['profilePic', 'sidebarProfile', 'sidebarLogout', 'notificationIcon', 'notificationIconMobile']
+          : ['signInBtn', 'signInBtnMobile'];
+
+        const elementsToHide = isLoggedIn
+          ? ['signInBtn', 'signInBtnMobile']
+          : ['profilePic', 'sidebarProfile', 'sidebarLogout', 'notificationIcon', 'notificationIconMobile'];
+
+        this.toggleElementsVisibility(elementsToShow, false);
+        this.toggleElementsVisibility(elementsToHide, true);
+      },
+
+      toggleElementsVisibility(elementIds, shouldHide) {
+        elementIds.forEach(id => {
+          const element = this.elements[id];
+          if (element) {
+            element.classList.toggle('hidden', shouldHide);
+          }
+        });
+      },
+
+      toggleSidebar() {
+        this.elements.sidebar?.classList.toggle("active");
+      },
+
+      toggleSearch() {
+        this.elements.searchOverlay?.classList.toggle("active");
+      }
+    };
+
+    // Helper functions for formatting
+    const FormatHelpers = {
+      formatPrice(price) {
+        return new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }).format(price);
+      },
+
+      formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        };
+        return date.toLocaleDateString('en-IN', options);
+      },
+
+      getStatusBadge(status) {
+        const statusClass = `status-${status.toLowerCase()}`;
+        return `<span class="status-badge ${statusClass}">${status}</span>`;
+      }
+    };
+
+    // Bids functionality - optimized and modular
+    const BidsController = {
+      init() {
+        this.elements = ElementCache.cache;
+        this.attachEventListeners();
+        this.fetchAndDisplayBids();
+      },
+
+      attachEventListeners() {
+        const filters = [
+          this.elements.bidsSort,
+          this.elements.bidsYear,
+          this.elements.bidsPrice
+        ];
+
+        filters.forEach(select => {
+          if (select) {
+            select.addEventListener('change', () => this.fetchAndDisplayBids());
+          }
+        });
+      },
+
+      showLoading() {
+        if (this.elements.bidsTableBody) {
+          this.elements.bidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem;">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 0.5rem;">Loading bids...</p>
+              </td>
+            </tr>
+          `;
+        }
+      },
+
+      showError(message) {
+        if (this.elements.bidsTableBody) {
+          this.elements.bidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem; color: #dc2626;">
+                ${message}
+              </td>
+            </tr>
+          `;
+        }
+      },
+
+      showEmptyState() {
+        if (this.elements.bidsTableBody) {
+          this.elements.bidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem;">
+                No bids found matching your criteria
+              </td>
+            </tr>
+          `;
+        }
+      },
+
+      renderBids(bids) {
+        if (!this.elements.bidsTableBody) return;
+        this.elements.bidsTableBody.innerHTML = bids.map(bid => `
+          <tr role="row">
+            <td data-label="ID">#${bid._id?.toString().slice(-4) || ''}</td>
+            <td data-label="Product Name">${bid.carname}</td>
+            <td data-label="Category">${bid.category || '-'}</td>
+            <td data-label="Date &amp; Time">${FormatHelpers.formatDate(bid.datetime)}</td>
+            <td data-label="Location">${bid.location}</td>
+            <td data-label="Action"><a href="#">${bid.action || 'View details'}</a></td>
+          </tr>
+        `).join('');
+      },
+
+
+
+      async fetchAndDisplayBids() {
+        try {
+          this.showLoading();
+          const response = await fetch('/api/activity/my-activities', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          const data = await response.json();
+          const activities = data.activities || [];
+          if (!Array.isArray(activities) || activities.length === 0) {
+            this.showEmptyState();
+            return;
+          }
+          // Map activities to the expected bid structure used by renderBids
+          // Get location from localStorage if not present in activity
+          const localLocation = localStorage.getItem('location') || '-';
+          const mapped = activities.map(act => ({
+            _id: act._id,
+            carname: act.itemTitle || (act.meta && act.meta.itemTitle) || 'Item',
+            category: act.category || '-',
+            datetime: act.createdAt,
+            location: act.location || '-',
+            action: `${act.action} ${act.amount ? '₹' + act.amount.toLocaleString('en-IN') : ''}`
+          }));
+
+          this.renderBids(mapped);
+        } catch (error) {
+          console.error('Error fetching activities:', error);
+          this.showError('Failed to load activities. Please try again later.');
+        }
+      },
+
+      getAuthToken() {
+        // Get authentication token from localStorage, sessionStorage, or cookies
+        return localStorage.getItem('authToken') || 
+               sessionStorage.getItem('authToken') || 
+               this.getCookie('authToken');
+      },
+
+      getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      }
+    };
+
+    // Listings functionality
+    const ListingsController = {
+      init() {
+        this.elements = ElementCache.cache;
+        this.attachEventListeners();
+      },
+
+      attachEventListeners() {
+        const filters = [
+          this.elements.listingsSort,
+          this.elements.listingsYear,
+          this.elements.listingsPrice
+        ];
+
+        filters.forEach(select => {
+          if (select) {
+            select.addEventListener('change', () => this.fetchAndDisplayListings());
+          }
+        });
+      },
+
+      showLoading() {
+        if (this.elements.listingsTableBody) {
+          this.elements.listingsTableBody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 2rem;">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 0.5rem;">Loading listings...</p>
+              </td>
+            </tr>
+          `;
+        }
+      },
+
+      showError(message) {
+        if (this.elements.listingsTableBody) {
+          this.elements.listingsTableBody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 2rem; color: #dc2626;">
+                ${message}
+              </td>
+            </tr>
+          `;
+        }
+      },
+
+      showEmptyState() {
+        if (this.elements.listingsTableBody) {
+          this.elements.listingsTableBody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 2rem;">
+                No listings found matching your criteria
+              </td>
+            </tr>
+          `;
+        }
+      },
+
+      renderListings(listings) {
+        if (!this.elements.listingsTableBody) return;
+
+        this.elements.listingsTableBody.innerHTML = listings.map(listing => `
+          <tr role="row">
+            <td data-label="ID">#${listing.listingId}</td>
+            <td data-label="Description">${listing.description}</td>
+            <td data-label="Date &amp; Time">${FormatHelpers.formatDate(listing.dateTime)}</td>
+            <td data-label="Car Name">${listing.carName}</td>
+            <td data-label="Price">${FormatHelpers.formatPrice(listing.price)}</td>
+            <td data-label="Location">${listing.location}</td>
+            <td data-label="Status">${FormatHelpers.getStatusBadge(listing.status)}</td>
+            <td data-label="Action"><a href="#">View details</a></td>
+          </tr>
+        `).join('');
+      },
+
+
+
+      async fetchAndDisplayListings() {
+        try {
+          this.showLoading();
+
+          const params = new URLSearchParams({
+            sort: this.elements.listingsSort?.value || 'Newest first',
+            year: this.elements.listingsYear?.value || 'Any',
+            priceRange: this.elements.listingsPrice?.value || 'Any'
+          });
+
+          const response = await fetch(`/api/listings?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.getAuthToken()}`
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          const listings = data.listings || data; // Handle different response structures
+
+          if (!Array.isArray(listings) || listings.length === 0) {
+            this.showEmptyState();
+            return;
+          }
+
+          this.renderListings(listings);
+
+        } catch (error) {
+          console.error('Error fetching listings:', error);
+          this.showError('Failed to load listings. Please try again later.');
+        }
+      },
+
+      getAuthToken() {
+        // Get authentication token from localStorage, sessionStorage, or cookies
+        return localStorage.getItem('authToken') || 
+               sessionStorage.getItem('authToken') || 
+               this.getCookie('authToken');
+      },
+
+      getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      }
+    };
+
+    // Event Listeners
+    const EventManager = {
+      init() {
+        this.attachEventListeners();
+      },
+
+      attachEventListeners() {
+        document.addEventListener('click', (e) => this.handleDocumentClick(e));
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+      },
+
+      handleDocumentClick(e) {
+        const sidebar = ElementCache.get('sidebar');
+        const hamburgers = document.querySelectorAll('.hamburger');
+
+        if (sidebar && sidebar.classList.contains('active')) {
+          const isClickInsideSidebar = sidebar.contains(e.target);
+          const isHamburgerClick = Array.from(hamburgers).some(h => h.contains(e.target));
+
+          if (!isClickInsideSidebar && !isHamburgerClick) {
+            UIController.toggleSidebar();
+          }
+        }
+      },
+
+      handleKeyDown(e) {
+        if (e.key === 'Escape') {
+          const sidebar = ElementCache.get('sidebar');
+          const searchOverlay = ElementCache.get('searchOverlay');
+
+          if (sidebar?.classList.contains('active')) {
+            UIController.toggleSidebar();
+          }
+          if (searchOverlay?.classList.contains('active')) {
+            UIController.toggleSearch();
+          }
+        }
+      }
+    };
+
+    // Application initialization
+    const App = {
+      init() {
+        UIController.init();
+        TabController.init();
+        EventManager.init();
+        BidsController.init();
+        ListingsController.init();
+      }
+    };
+
+    // Initialize app when DOM is loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => App.init());
+    } else {
+      App.init();
+    }
+
+    // Expose necessary functions globally for inline event handlers
+    window.UIController = UIController;
+  </script>
+</body>
+
+</html>

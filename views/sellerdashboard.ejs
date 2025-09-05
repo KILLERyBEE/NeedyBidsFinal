@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f6f8fa;
+            margin: 0;
+            color: #222;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+            padding: 32px 24px 24px 24px;
+            min-height: 80vh;
+        }
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            letter-spacing: -1px;
+        }
+        .dashboard-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+        .dashboard-tab {
+            background: #f3f4f6;
+            color: #2563eb;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            padding: 10px 22px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            outline: none;
+        }
+        .dashboard-tab.active {
+            background: #2563eb;
+            color: #fff;
+        }
+        .dashboard-listings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin-top: 8px;
+        }
+        .listing-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(37,99,235,0.07);
+            padding: 22px 18px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.7s forwards;
+        }
+        .listing-card .listing-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 2px;
+        }
+        .listing-card .listing-price {
+            color: #2563eb;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .listing-card .listing-desc {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .listing-card .listing-meta {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .listing-card .listing-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+        }
+        .listing-card .action-btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .listing-card .action-btn.secondary {
+            background: #f3f4f6;
+            color: #2563eb;
+        }
+        .listing-card .action-btn:hover {
+            background: #1746a2;
+            color: #fff;
+        }
+        .listing-card .action-btn.secondary:hover {
+            background: #e0e7ef;
+            color: #1746a2;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+        @media (max-width: 700px) {
+            .dashboard-container {
+                padding: 10px 2vw;
+            }
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            .dashboard-listings {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="dashboard-title"><i class="fa-solid fa-user-tie"></i> Seller Dashboard</div>
+            <div style="font-size:1.1rem;color:#888;">Welcome back!</div>
+        </div>
+        <div class="dashboard-tabs" id="categoryTabs">
+            <% let firstCategory = null; %>
+            <% for (const [category, items] of Object.entries(sellerItems)) { if (!firstCategory && items.length) firstCategory = category; %>
+                <% if (items.length) { %>
+                    <button class="dashboard-tab" data-category="<%= category %>"><%= category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) %> (<%= items.length %>)</button>
+                <% } %>
+            <% } %>
+        </div>
+        <div class="dashboard-listings" id="dashboardListings">
+            <% for (const [category, items] of Object.entries(sellerItems)) { %>
+                <% if (items.length) { %>
+                    <% items.forEach((item, idx) => { %>
+                        <div class="listing-card" data-category="<%= category %>" style="animation-delay:<%= idx*0.08 %>s;display:none;">
+                            <div class="listing-title"><%= item.title || item.name || item.productName || item.adTitle || item.itemTitle || "No Title" %></div>
+                            <div class="listing-price">Price: ₹<%= item.price || item.basePrice || "N/A" %></div>
+                            <div class="listing-desc"><%= (typeof item.description === 'string' && item.description.trim()) ? item.description : (item.desription || item.details || "No Description") %></div>
+                            <div class="listing-meta">
+                                <i class="fa-solid fa-clock"></i> <%= item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '' %>
+                                <% if (item.city) { %> &nbsp; <i class="fa-solid fa-location-dot"></i> <%= item.city %> <% } %>
+                            </div>
+                            <div class="listing-actions">
+                                <button class="action-btn"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <button class="action-btn secondary" onclick="deleteItem('<%= category %>', '<%= item._id %>', this)"><i class="fa-solid fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+    <script>
+        // Tab switching logic
+        const tabs = document.querySelectorAll('.dashboard-tab');
+        const cards = document.querySelectorAll('.listing-card');
+        let activeCategory = '<%= firstCategory || '' %>';
+        function showCategory(category) {
+            cards.forEach(card => {
+                if (card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            tabs.forEach(tab => {
+                if (tab.dataset.category === category) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        }
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                showCategory(tab.dataset.category);
+            });
+        });
+        // Show first category by default
+        if (activeCategory) showCategory(activeCategory);
+
+function deleteItem(category, itemId, btn) {
+    if (!confirm('Are you sure you want to delete this item?')) return;
+    btn.disabled = true;
+    fetch(`/sellerDashboard/delete/${category}/${itemId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            btn.closest('.listing-card').remove();
+        } else {
+            alert('Delete failed');
+            btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        alert('Delete failed');
+        btn.disabled = false;
+    });
+}
+    </script>
+</body>
+</html>

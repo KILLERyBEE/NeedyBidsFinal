@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeedyBids - Auction</title>
+    <link rel="icon" href="images/favicon-32x32.png" type="image/png" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!--Bootstrap icons-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #e9e9e9;
+            color: #333;
+            /* padding: 1.25rem; */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .auction-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 81.25rem;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .auction-main {
+            /* background: #f5f5f5; */
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .main-image-container {
+            position: relative;
+            height: clamp(250px, 40vh, 450px);
+            overflow: hidden;
+            order: 1;
+            width: 100%;
+            margin-bottom: 0.9375rem;
+        }
+
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            transition: transform 0.3s ease;
+            background: #f8f8f8;
+        }
+
+        .slider-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slider-prev, .slider-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-prev {
+            left: 12px;
+        }
+
+        .slider-next {
+            right: 12px;
+        }
+
+        .slider-prev i, .slider-next i {
+            font-size: 18px;
+            color: #111;
+        }
+
+        .no-reserve-badge {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background-color: #2563eb;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 10;
+        }
+
+        .like-button-main {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            border: none;
+            cursor: pointer;
+            z-index: 20;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            transition: all 0.3s ease;
+        }
+
+        .like-button-main:hover {
+            transform: scale(1.1);
+        }
+
+        .like-button-main i {
+            font-size: 1.5rem;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            text-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.3);
+        }
+
+        .like-button-main.liked i {
+            color: #dc2626;
+            animation: heartBeat 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(0.9); }
+            75% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .ad-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-block-start: 0.625rem;
+        }
+
+        .ad-location {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .auction-status {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            justify-content: space-evenly;
+            padding: 0.625rem;
+            background: #080808;
+            border-radius: 0.5rem;
+            color: white;
+        }
+
+        .auction-status .auction-status-title,
+        .auction-status .material-symbols-outlined,
+        .auction-status i {
+            color: #A3A3A3;
+            font-size: 1.125rem;
+        }
+
+        .auction-status .highest-bid-info i {
+            font-size: 0.875rem;
+        }
+
+        .time-remaining,
+        .highest-bid-info,
+        .bid-count {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .details-section {
+            margin-bottom: 1.125rem;
+            padding: 1.25rem;
+            background-color: white;
+            border-radius: 0.875rem;
+            box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.08);
+        }
+
+        .details-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #222;
+            border-bottom: 0.0625rem solid #6d6c6c;
+            padding-bottom: 0.625rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 0.75rem;
+            border: 0.0625rem solid #e2e8f0;
+            border-radius: 0.25rem;
+            background: #ffffff;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #000000;
+            text-align: left;
+            margin-bottom: 0.3125rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2c333d;
+            text-align: left;
+        }
+
+        .description-section p {
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .bid-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+
+        .bid-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .bid-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .bid-list::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .bid-list::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+
+        .bid-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 0.0625rem solid #f0f0f0;
+        }
+
+        .bid-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 0.125rem solid #fff;
+            box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bid-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bid-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bidder {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.125rem;
+        }
+
+        .bid-amount-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bid-label {
+            font-size: 0.75rem;
+            color: #666;
+            background: #333;
+            color: white;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.1875rem;
+            font-weight: 500;
+        }
+
+        .bid-time {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .ending-soon-section {
+            flex: 0 0 28%;
+            background: #e9e9e9;
+            border-radius: 0.75rem;
+        }
+
+        .ending-soon-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .ending-soon-container .ending-soon-title {
+            padding: 1rem;
+            margin: 0;
+        }
+
+        .seller-info {
+            background: white;
+            border-radius: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .seller-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .seller-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .seller-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .seller-details {
+            flex: 1;
+        }
+
+        .seller-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.125rem;
+        }
+
+        .seller-id {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .seller-note {
+            font-size: 0.875rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .chat-button {
+            background: #0047B2;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .chat-button i {
+            font-size: 1.125rem;
+            color: white;
+        }
+
+        .chat-button:hover {
+            background: #217ae0;
+        }
+
+        .report-button {
+            background: transparent;
+            color: #d32f2f;
+            border: 0.0625rem solid #e0e0e0;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .report-button i {
+            font-size: 1.25rem;
+            color: #d32f2f;
+        }
+
+        .report-button:hover {
+            background: #fef7f7;
+            border-color: #d32f2f;
+        }
+
+        .bid-entry {
+            background: white;
+            border-radius: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .bid-entry h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .bid-info {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .current-bid {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+
+        .bid-count {
+            font-size: 0.9rem;
+            color: #ffffff;
+        }
+
+        .bid-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 0.0625rem solid #e0e0e0;
+        }
+
+        .bid-decrease,
+        .bid-increase {
+            background: white;
+            border: 0.0625rem solid #e0e0e0;
+            border-radius: 0.375rem;
+            width: 2.25rem;
+            height: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #1976d2;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bid-decrease:hover,
+        .bid-increase:hover {
+            background: #f0f7ff;
+            border-color: #1976d2;
+        }
+
+        .bid-amount {
+            flex: 1;
+            text-align: center;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #333;
+            padding: 0 1.25rem;
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+        }
+
+        .bid-amount:focus {
+            background: #ffffff;
+            border-radius: 4px;
+        }
+
+        .bid-now-button {
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.875rem 1.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .bid-now-button:hover {
+            background: #f57c00;
+        }
+
+        .ending-soon-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #222;
+            /* padding-bottom: 0.5rem; */
+            border-bottom: 0.0625rem solid #eee;
+            text-align: left;
+            /* margin-bottom: 1rem; */
+        }
+
+        .item-card {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            background: white;
+            width: 100%;
+            box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.25rem;
+        }
+
+        .item-image {
+            position: relative;
+            height: 11.25rem;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-bid-info {
+            position: absolute;
+            bottom: 0.75rem;
+            left: 0.75rem;
+            background: rgba(255, 255, 255);
+            color: white;
+            padding: 0.1875rem 0.625rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.9375rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+
+        .time-info {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .item-bid-info .material-symbols-outlined {
+            color: #2563eb;
+        }
+
+        .price-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .item-details {
+            padding: 0.9375rem;
+            position: relative;
+        }
+
+        .reserve-button {
+            background-color: #FF9E16;
+            color: white;
+            padding: 0.0625rem 0.25rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+
+        .no-reserve-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.0625rem 0.25rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+
+        .item-title {
+            font-size: 1rem;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 1.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-info,
+        .price-info-price {
+            color: black;
+        }
+
+        .price-info-bid {
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .item-description {
+            color: #666;
+            font-size: 0.8125rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-location {
+            color: #999;
+            font-size: 0.75rem;
+        }
+
+        .like-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            border: none;
+            cursor: pointer;
+            z-index: 20;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            padding: 0;
+            outline: none;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .like-button i {
+            font-size: 1.375rem;
+            color: #ffffff;
+            text-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        .like-button.liked i {
+            color: #ff0000;
+            animation: heartBeat 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .material-symbols-outlined {
+            font-size: 1.125rem;
+        }
+
+        .no-items-message {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Mobile First Styles */
+        .desktop-view {
+            display: none;
+        }
+
+        .mobile-view {
+            display: block;
+        }
+
+        /* Tablet and Desktop Styles */
+        @media (min-width: 1200px) {
+            .auction-container {
+                flex-direction: row;
+                max-width: 1400px;
+                align-items: flex-start;
+                /* margin-top: 20px; */
+            }
+            
+            .auction-main {
+                flex: 1;
+                max-width: 70%;
+                margin-right: 2rem;
+            }
+            
+            .ending-soon-section {
+                flex: 0 0 28%;
+                min-width: 320px;
+                position: sticky;
+                top: 2rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .desktop-view {
+                display: block;
+            }
+
+            .mobile-view {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .auction-container {
+                flex-direction: column;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+
+            .auction-main {
+                margin-right: 0;
+                width: 100%;
+                flex: 1;
+            }
+
+            .ending-soon-section {
+                width: 100%;
+                margin-right: 0;
+            }
+
+            .details-grid {
+                grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr));
+                gap: 0.9375rem;
+            }
+
+            .details-section {
+                padding: 0.9375rem;
+            }
+
+            .ending-soon-items {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+                gap: 1.25rem;
+            }
+
+            .item-card {
+                width: 100%;
+                margin-bottom: 0;
+            }
+        }
+
+        /* Mobile View Reordering */
+        @media (max-width: 768px) {
+            body {
+                background-color: #ffffff important!;
+                padding: 0;
+            }
+
+            .auction-container {
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            main {
+                padding: 0;
+            }
+
+            .details-section:first-child {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .auction-main {
+                background-color: #ffffff;
+            }
+
+            .ending-soon-section {
+                order: 2;
+            }
+
+            .main-image-container {
+                position: relative;
+                overflow: hidden;
+                order: 1;
+            }
+
+            .details-section {
+                padding: 10px 1rem;
+                box-shadow: none;
+                margin-bottom: 0.5rem;
+            }
+
+            .auction-status-title,
+            .time-remaining .material-symbols-outlined {
+                color: #A3A3A3;
+                font-size: 1rem;
+            }
+              .item-bid-info .material-symbols-outlined {
+            color: #2563eb;
+        }
+
+           .highest-bid-info .auction-status-title, .bid-count .auction-status-title {
+                display: none;
+            }
+
+            .auction-status-value {
+                font-size: 0.875rem;
+                font-weight: 700;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Reordering for mobile view */
+            .auction-main {
+                order: 1;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .ending-soon-section {
+                order: 2;
+                width: 100%;
+            }
+
+            /* Mobile-specific ordering */
+            .main-image-container {
+                order: 1;
+            }
+
+            .bid-entry-mobile {
+                order: 2;
+            }
+
+            .details-grid-container {
+                order: 3;
+            }
+
+            .description-section {
+                order: 4;
+            }
+
+            .seller-info-mobile {
+                order: 5;
+            }
+
+            .bid-history {
+                order: 6;
+            }
+
+            .ending-soon-title-mobile {
+                order: 7;
+                margin-bottom: 10px;
+                padding: 0 1rem;
+            }
+
+            /* Hide these elements from sidebar on mobile */
+            .ending-soon-section .bid-entry,
+            .ending-soon-section .seller-info {
+                display: none;
+            }
+
+            /* Horizontal scrolling for ending soon items */
+            .ending-soon-section {
+                display: flex;
+                flex-direction: column;
+                padding: 0 1rem;
+            }
+
+            .ending-soon-items {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.9375rem;
+                padding: 0.625rem 0;
+                scrollbar-width: thin;
+                justify-content: center;
+                min-width: 100%;
+            }
+
+            .ending-soon-items .item-card {
+                flex: 0 0 85%;
+                max-width: 85%;
+                margin-bottom: 0;
+            }
+
+            /* Hide ending soon title from sidebar and show it above the horizontal scroll */
+            .ending-soon-section .ending-soon-title {
+                display: none;
+            }
+
+            .auction-main .ending-soon-title-mobile {
+                display: block;
+                order: 7;
+            }
+
+            .slider-prev, .slider-next {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        /* For desktop view, ensure proper ordering */
+        @media (min-width: 801px) {
+            .auction-main .ending-soon-title-mobile {
+                display: none;
+            }
+
+            .ending-soon-section .ending-soon-title {
+                display: block;
+            }
+
+            .bid-entry-mobile,
+            .seller-info-mobile {
+                display: none;
+            }
+
+            .ending-soon-items {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/header-all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="icon" href="images/favicon-32x32.jpeg" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+</head>
+
+<body data-authenticated="<%= isAuthenticated ? '1' : '0' %>">
+    <%- include('header-all') %>
+    <!-- Using global in-page alert from header-all.ejs -->
+    
+    <main style="flex: 1;">
+        <div class="auction-container">
+            <!-- Main Auction Section -->
+            <div class="auction-main">
+            <!-- Main Image Container - Order 1 -->
+            <div class="details-section">
+                <div>
+                    <div class="main-image-container">
+                        <!-- Image slider: manual navigation only (no auto-slide) -->
+                        <div class="slider-inner">
+                            <% 
+                                // build photos array preferring `photos` array then individual photo1..photo5
+                                const photos = [];
+                                if (Array.isArray(item.photos) && item.photos.length) {
+                                    item.photos.slice(0,5).forEach(p=> photos.push(p));
+                                } else {
+                                    if (item.photo1) photos.push(item.photo1);
+                                    if (item.photo2) photos.push(item.photo2);
+                                    if (item.photo3) photos.push(item.photo3);
+                                    if (item.photo4) photos.push(item.photo4);
+                                    if (item.photo5) photos.push(item.photo5);
+                                }
+                            %>
+                            <% if (photos.length === 0) { %>
+                                <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&h=400&fit=crop" alt="<%= item.adTitle || item.model || 'Item' %>">
+                            <% } else { %>
+                                <% photos.forEach(function(photo, idx) { %>
+                                    <% if (idx === 0) { %>
+                                        <img class="slider-image" data-index="<%= idx %>" src="<%= photo %>" alt="<%= item.adTitle || item.model || 'Item' %>">
+                                    <% } else { %>
+                                        <img class="slider-image" data-index="<%= idx %>" src="<%= photo %>" alt="<%= item.adTitle || item.model || 'Item' %>" style="display:none;">
+                                    <% } %>
+                                <% }); %>
+                                <!-- prev/next controls -->
+                                <% if (photos.length > 1) { %>
+                                    <button class="slider-prev" aria-label="Previous">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </button>
+                                    <button class="slider-next" aria-label="Next">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                <% } %>
+                            <% } %>
+                        </div>
+                        <% if (item.auctionType === 'No Reserve') { %>
+                            <div class="no-reserve-badge">NO RESERVE</div>
+                        <% } else { %>
+                            <div class="no-reserve-badge">RESERVE</div>
+                        <% } %>
+                        <button class="like-button-main <%= (user && user.wishlist && user.wishlistModel && user.wishlist.findIndex(function(id, idx){ return String(id) === String(item._id) && user.wishlistModel[idx] === (category || '') }) !== -1) ? 'liked' : '' %>"
+                            onclick="toggleLike(event, this)"
+                            aria-label="Add to favorites"
+                            data-item-id="<%= item._id %>"
+                            data-model-name="<%= category %>">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Title Container -->
+                    <div class="title-container">
+                        <h1 class="ad-title"><%= item.adTitle || item.model || 'Item' %></h1>
+                        <div class="ad-location"><%= item.city || '' %>, <%= item.state || '' %></div>
+                    </div>
+
+                    <!-- Auction Status Container -->
+                    <div class="auction-status">
+                        <div class="time-remaining" title="Time Left" data-duration="<%= item.auctionDuration %>" data-start="<%= item.createdAt && item.createdAt.toISOString ? item.createdAt.toISOString() : item.createdAt %>">
+                            <span class="material-symbols-outlined">schedule</span>
+                            <div class="auction-status-value"><%= item.timeRemaining %></div>
+                        </div>
+                        <div class="highest-bid-info">
+                            <i class="fa-solid fa-arrow-up" title="Highest Bid"></i>
+                            <div class="auction-status-title">Highest bid:</div>
+                            <div class="auction-status-value">&#8377;<%= item.highestBid ? item.highestBid.toLocaleString('en-IN') : '0' %></div>
+                        </div>
+                        <div class="bid-count">
+                            <span class="material-symbols-outlined" style="color: #A3A3A3;" title="Total Bids">
+                                gavel
+                            </span>
+                            <div class="auction-status-title">Bids :</div>
+                            <div class="auction-status-value"><%= item.bidCount || 0 %></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bid Entry Section for Mobile - Order 2 -->
+            <div class="details-section bid-entry-mobile">
+                <div class="bid-entry">
+                    <h3>Enter Bid Amount</h3>
+                    <div class="bid-info">
+                        <div class="current-bid">Current Highest Bid: &#8377;<%= item.highestBid ? item.highestBid.toLocaleString('en-IN') : '0' %></div>
+                        <div class="bid-count"><%= item.bidCount %> bids placed</div>
+                    </div>
+                    <div class="bid-input-container" id="bid-input-container-mobile" data-next-bid="<%= item.nextBidAmount || 0 %>" data-highest-bid="<%= item.highestBid || item.basePrice || 0 %>" data-item-id="<%= item && item._id ? item._id : '' %>" data-category="<%= category || '' %>">
+                        <button class="bid-decrease" onclick="decreaseBid()">&minus;</button>
+                        <input type="text" class="bid-amount" value="&#8377;<%= item.nextBidAmount ? item.nextBidAmount.toLocaleString('en-IN') : '0' %>" onchange="validateBidAmount(this)" oninput="formatBidAmount(this)" />
+                        <button class="bid-increase" onclick="increaseBid()">&plus;</button>
+                    </div>
+                    <button class="bid-now-button" onclick="submitBid()">Bid Now</button>
+                </div>
+            </div>
+
+            <!-- Details Section Container - Order 3 -->
+            <div class="details-section details-grid-container">
+                <h2>Details</h2>
+
+                <div class="details-grid">
+                    <% if (item.acType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">AC type</span>
+                        <span class="detail-value"><%= item.acType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.tonnage) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Tonnage</span>
+                        <span class="detail-value"><%= item.tonnage %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.condition) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Condition</span>
+                        <span class="detail-value"><%= item.condition %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.technology) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Technology</span>
+                        <span class="detail-value"><%= item.technology %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.energyRating) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Energy Rating</span>
+                        <span class="detail-value"><%= item.energyRating %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.equipmentType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Equipment Type</span>
+                        <span class="detail-value"><%= item.equipmentType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.shutterCount) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Shutter Count</span>
+                        <span class="detail-value"><%= item.shutterCount %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.sensorResolution) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Sensor Resolution</span>
+                        <span class="detail-value"><%= item.sensorResolution %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.lensMount) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Lens Mount</span>
+                        <span class="detail-value"><%= item.lensMount %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.processor) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Processor</span>
+                        <span class="detail-value"><%= item.processor %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.ram) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">RAM</span>
+                        <span class="detail-value"><%= item.ram %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.storageType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Storage Type</span>
+                        <span class="detail-value"><%= item.storageType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.storageSize) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Storage Size</span>
+                        <span class="detail-value"><%= item.storageSize %></span>
+                    </div>
+                    <% } %>
+                     <% if (item.warranty) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Warranty</span>
+                        <span class="detail-value"><%= item.warranty %></span>
+                    </div>
+                    <% } %>
+                     <% if (item.doorType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Door Type</span>
+                        <span class="detail-value"><%= item.doorType %></span>
+                    </div>
+                    <% } %>
+                     <% if (item.capacity) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Capacity</span>
+                        <span class="detail-value"><%= item.capacity %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.freezerType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Freezer Type</span>
+                        <span class="detail-value"><%= item.freezerType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.productType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Product Type</span>
+                        <span class="detail-value"><%= item.productType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.edition) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Edition</span>
+                        <span class="detail-value"><%= item.edition %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.applianceType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Appliance Type</span>
+                        <span class="detail-value"><%= item.applianceType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.age) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Appliance Age</span>
+                        <span class="detail-value"><%= item.age %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.screenSize) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Screen Size</span>
+                        <span class="detail-value"><%= item.screenSize %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.machineType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Machine Type</span>
+                        <span class="detail-value"><%= item.machineType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.installation) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Installation</span>
+                        <span class="detail-value"><%= item.installation %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.furnitureType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Furniture Type</span>
+                        <span class="detail-value"><%= item.furnitureType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.material) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Material</span>
+                        <span class="detail-value"><%= item.material %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.size) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Size</span>
+                        <span class="detail-value"><%= item.size %></span>
+                    </div>
+                    <% } %>
+                    
+                    <% if (item.brand) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Make</span>
+                        <span class="detail-value"><%= item.brand %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.model) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Model</span>
+                        <span class="detail-value"><%= item.model %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.year) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Year</span>
+                        <span class="detail-value"><%= item.year %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.fuelType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Fuel Type</span>
+                        <span class="detail-value"><%= item.fuelType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.transmission) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Transmission</span>
+                        <span class="detail-value"><%= item.transmission %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.kmDriven) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Kilometers Driven</span>
+                        <span class="detail-value"><%= item.kmDriven.toLocaleString('en-IN') %> km</span>
+                    </div>
+                    <% } %>
+                    <% if (item.owners) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Owners</span>
+                        <span class="detail-value"><%= item.owners %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.condition) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Condition</span>
+                        <span class="detail-value"><%= item.condition %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.basePrice) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Base Price</span>
+                        <span class="detail-value">&#8377;<%= item.basePrice.toLocaleString('en-IN') %></span>
+                    </div>
+                    <% } %> 
+                     <% if (item.auctionType) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Auction Type</span>
+                        <span class="detail-value"><%= item.auctionType %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.auctionDuration) { %>
+                    <div class="detail-item">
+                        <span class="detail-label">Auction Duration</span>
+                        <span class="detail-value"><%= item.auctionDuration %></span>
+                    </div>
+                    <% } %>
+                    <% if (item.city) { %>
+                <div class="detail-item">
+                    <span class="detail-label">City</span>
+                    <span class="detail-value"><%= item.city %></span>
+                </div>
+                <% } %>
+                <% if (item.state) { %>
+                <div class="detail-item">
+                    <span class="detail-label">State</span>
+                    <span class="detail-value"><%= item.state %></span>
+                </div>
+                <% } %>
+                <% if (item.pincode) { %>
+                <div class="detail-item">
+                    <span class="detail-label">Pincode</span>
+                    <span class="detail-value"><%= item.pincode %></span>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Description Section Container - Order 4 -->
+        <div class="details-section description-section">
+            <h2>Description</h2>
+            <p><%= item.description || 'No description available for this item.' %></p>
+        </div>
+
+        <!-- Seller Info for Mobile - Order 5 -->
+        <div class="details-section seller-info-mobile">
+            <div class="seller-info">
+                <div class="seller-profile">
+                    <div class="seller-avatar">
+                        <img src="<%= item.seller && item.seller.profilePicture ? item.seller.profilePicture : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&fit=crop&crop=faces' %>"
+                            alt="Seller Avatar">
+                    </div>
+                    <div class="seller-details">
+                        <div class="seller-name"><%= item.seller ? item.seller.username : 'Seller' %></div>
+                        <div class="seller-id">ID <%= item.userid ? item.userid.toString().slice(-6) : 'N/A' %></div>
+                    </div>
+                </div>
+                <div class="seller-note">
+                    <%= item.seller && item.seller.about ? item.seller.about : 'Items are listed clearly with starting prices. Condition and details given upfront. Bidding is open—highest bidder wins. No negotiations after the auction ends. Questions only about the product, please.' %>
+                </div>
+                <div class="action-buttons">
+                    <button class="chat-button" data-seller="<%= item.seller ? item.seller.username : '' %>" onclick="chatWithSeller(this.dataset.seller)">
+                        <i class="bi bi-chat-fill"></i>
+                        Chat with seller
+                    </button>
+                    <button class="report-button">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Report the item
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bid History Container - Order 6 -->
+        <div class="details-section bid-history">
+            <h2>Bid history</h2>
+            <div class="bid-list">
+                <!-- Dynamic bid items will be rendered here by JS -->
+            </div>
+        </div>
+
+        <!-- Ending Soon Title for Mobile - Order 7 -->
+   
+    </div>
+
+    <!-- Ending Soon Container -->
+    <div class="ending-soon-section">
+        <!-- Seller Info Section for Desktop -->
+        <div class="details-section seller-info">
+            <div class="seller-profile">
+                <div class="seller-avatar">
+                    <img src="<%= item.seller && item.seller.profilePicture ? item.seller.profilePicture : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&fit=crop&crop=faces' %>"
+                        alt="Seller Avatar">
+                </div>
+                <div class="seller-details">
+                    <div class="seller-name"><%= item.seller ? item.seller.username : 'Seller' %></div>
+                    <div class="seller-id">ID <%= item.userid ? item.userid.toString().slice(-6) : 'N/A' %></div>
+                </div>
+            </div>
+            <div class="seller-note">
+                <%= item.seller && item.seller.about ? item.seller.about : 'Items are listed clearly with starting prices. Condition and details given upfront. Bidding is open—highest bidder wins. No negotiations after the auction ends. Questions only about the product, please.' %>
+            </div>
+            <div class="action-buttons">
+                <button class="chat-button" data-seller="<%= item.seller ? item.seller.username : '' %>" onclick="chatWithSeller(this.dataset.seller)">
+                    <i class="bi bi-chat-fill"></i>
+                    Chat with seller
+                </button>
+                <button class="report-button">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Report the item
+                </button>
+            </div>
+        </div>
+
+        <!-- Bid Entry Section for Desktop -->
+        <div class="details-section bid-entry">
+            <h3>Enter Bid Amount</h3>
+            <div class="bid-info">
+                <div class="current-bid">Current Highest Bid: &#8377;<%= item.highestBid ? item.highestBid.toLocaleString('en-IN') : '0' %></div>
+                <div class="bid-count"><%= item.bidCount %> bids placed</div>
+            </div>
+            <div class="bid-input-container" id="bid-input-container-desktop" data-next-bid="<%= item.nextBidAmount || 0 %>" data-highest-bid="<%= item.highestBid || item.basePrice || 0 %>" data-item-id="<%= item && item._id ? item._id : '' %>" data-category="<%= category || '' %>">
+                <button class="bid-decrease" onclick="decreaseBid()">&minus;</button>
+                <input type="text" class="bid-amount" value="&#8377;<%= item.nextBidAmount ? item.nextBidAmount.toLocaleString('en-IN') : '0' %>" onchange="validateBidAmount(this)" oninput="formatBidAmount(this)" />
+                <button class="bid-increase" onclick="increaseBid()">&plus;</button>
+            </div>
+            <button class="bid-now-button" onclick="submitBid()">Bid Now</button>
+        </div>
+
+        <!-- Ending Soon Items -->
+        <div class="ending-soon-items ">
+            <h2 class="ending-soon-title ">Ending Soon</h2>
+            <% if (endingSoonItems && endingSoonItems.length > 0) { %>
+                <% endingSoonItems.forEach(function(endingItem) { %>
+                    <div class="item-card" onclick="window.location.href='/item/<%= endingItem.modelName || category %>/<%= endingItem._id %>'">
+                        <div class="item-image">
+                            <img src="<%= endingItem.photo1 || 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop' %>"
+                                alt="<%= endingItem.adTitle || endingItem.model || 'Item' %>">
+                            <button class="like-button" onclick="toggleLike(event, this); event.stopPropagation();" aria-label="Add to favorites">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <div class="item-bid-info">
+                                <div class="time-info time-remaining" title="Time Left" data-duration="<%= endingItem.auctionDuration %>" data-start="<%= endingItem.createdAt && endingItem.createdAt.toISOString ? endingItem.createdAt.toISOString() : endingItem.createdAt %>" data-end="<%= endingItem.endTimeISO || '' %>">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    <div class="auction-status-value"><%= endingItem.timeRemaining %></div>
+                                </div>
+                                <div class="price-info">
+                                    <div class="price-info-bid">Bid</div>
+                                    <div class="price-info-price">&#8377;<%= endingItem.basePrice ? endingItem.basePrice.toLocaleString('en-IN') : '0' %></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-details">
+                            <div class="item-title"><%= endingItem.adTitle || endingItem.model || 'Item' %></div>
+                            <div class="item-description">
+                                <% if (endingItem.auctionType === 'Reserve') { %>
+                                    <div class="reserve-button">RESERVE</div>
+                                <% } else { %>
+                                    <div class="no-reserve-button">NO RESERVE</div>
+                                <% } %>
+                                <%= endingItem.description || '' %>
+                            </div>
+                            <div class="item-location"><%= endingItem.city || '' %>, <%= endingItem.state || '' %></div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-items-message">No other items ending soon in this category.</div>
+            <% } %>
+        </div>
+    </div>
+</div>
+</main>
+
+<!-- Overlay -->
+<div class="dialog-overlay" style="display: none"></div>
+
+<!-- Report Dialog -->
+<div class="dialog-container" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
+    <div class="dialog-header">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h2>Report Item</h2>
+        <div class="close-btn">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <div class="dialog-body">
+        <p class="dialog-description">Please let us know what's wrong with this item. We'll review your report and
+            take appropriate action.</p>
+
+        <div class="form-group">
+            <label for="issue-type">Issue Type</label>
+            <select id="issue-type">
+                <option value="" disabled selected>Select an issue type</option>
+                <option value="inaccurate">Inaccurate Description</option>
+                <option value="damaged">Damaged Item</option>
+                <option value="wrong">Wrong Item</option>
+                <option value="expired">Expired Product</option>
+                <option value="fake">Counterfeit Item</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Please describe the issue in detail..."></textarea>
+        </div>
+    </div>
+
+    <div class="dialog-footer">
+        <button class="cancel-btn">Cancel</button>
+        <button class="submit-btn">Submit Report</button>
+    </div>
+</div>
+
+<div id="bid-message" style="display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); background:#25a244; color:#fff; padding:16px 32px; border-radius:10px; font-weight:600; font-size:1.15rem; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,0.12); text-align:center;">Bid Placed</div>
+
+<!-- Socket.IO client for real-time bid history -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    function toggleLike(event, button) {
+        // Prevent the click event from bubbling up to the card
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Toggle the liked class
+        button.classList.toggle('liked');
+    }
+
+// Bid amount controls - read initial values from DOM data-attributes to avoid embedding EJS inside scripts
+(function() {
+    const bidIncrement = 200;
+
+    // Prefer desktop container, fall back to mobile container
+    const desktopContainer = document.getElementById('bid-input-container-desktop');
+    const mobileContainer = document.getElementById('bid-input-container-mobile');
+    const container = desktopContainer || mobileContainer;
+    if (!container) return; // nothing to do
+
+    let currentBid = Number(container.getAttribute('data-next-bid') || 0);
+    const highestBid = Number(container.getAttribute('data-highest-bid') || 0);
+    // keep itemId/category for submit
+    window.__bid_itemId = container.getAttribute('data-item-id') || '';
+    window.__bid_category = container.getAttribute('data-category') || '';
+
+    function updateBidDisplay() {
+        // update all visible bid-amount elements (mobile + desktop)
+        document.querySelectorAll('.bid-amount').forEach(el => {
+            el.value = '₹' + currentBid.toLocaleString('en-IN');
+        });
+    }
+
+    window.formatBidAmount = function(input) {
+        // Remove all non-digits
+        let value = input.value.replace(/[^0-9]/g, '');
+        
+        // Convert to number
+        let numValue = parseInt(value) || 0;
+        
+        // Format with commas and rupee symbol
+        input.value = '₹' + numValue.toLocaleString('en-IN');
+        
+        // Update the current bid value
+        currentBid = numValue;
+    }
+
+    window.validateBidAmount = function(input) {
+        // Get the numeric value
+        let value = parseInt(input.value.replace(/[^0-9]/g, '')) || 0;
+        
+        // Check if it's less than or equal to highest bid
+        if (value <= highestBid) {
+            showCenteredError('Bid amount must be greater than ₹' + highestBid.toLocaleString('en-IN'));
+            // Reset to previous valid bid amount
+            currentBid = Math.max(currentBid, highestBid + 1);
+            updateBidDisplay();
+            return false;
+        }
+        
+        // Update the current bid if valid
+        currentBid = value;
+        updateBidDisplay();
+        return true;
+    }
+
+    // Centered red error used in chat for 'Cannot talk with yourself' — reuse for bid-on-own-item
+    function showCenteredError(msg){
+        try{
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'signin-popup show';
+            errorDiv.innerHTML = msg;
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '24px';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translateX(-50%)';
+            errorDiv.style.background = '#d32f2f';
+            errorDiv.style.color = '#fff';
+            errorDiv.style.padding = '10px 24px';
+            errorDiv.style.borderRadius = '8px';
+            errorDiv.style.zIndex = '9999';
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 2500);
+        }catch(e){ try{ alert(msg); }catch(_){} }
+    }
+
+    window.increaseBid = function() {
+        currentBid += bidIncrement;
+        updateBidDisplay();
+    }
+
+    window.decreaseBid = function() {
+        const newBid = currentBid - bidIncrement;
+        if (newBid >= highestBid && newBid >= 0) {
+            currentBid = newBid;
+        } else {
+            // don't go below highestBid (or 0 as fallback)
+            currentBid = Math.max(highestBid, 0);
+        }
+        updateBidDisplay();
+    }
+
+    // initialize display
+    updateBidDisplay();
+
+    // expose submitBid to use collected globals
+    window.submitBid = async function() {
+        try {
+            const bidAmountInput = document.querySelector('.bid-amount');
+
+            if (!validateBidAmount(bidAmountInput)) {
+                return;
+            }
+
+            const userDistrict = localStorage.getItem('userDistrict') || '-';
+            const itemId = window.__bid_itemId;
+            const category = window.__bid_category || '';
+            if (!itemId) {
+                showInPageAlert('Item id missing');
+                return;
+            }
+
+            const bidAmount = parseInt(bidAmountInput.value.replace(/[^0-9]/g, '')) || 0;
+
+
+            const response = await fetch(`/item/${category}/${itemId}/bid`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bidAmount: bidAmount, userDistrict })
+            });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('bid-message').style.display = 'block';
+                setTimeout(() => { document.getElementById('bid-message').style.display = 'none'; window.location.reload(); }, 1500);
+            } else {
+                if (data.message && data.message.toLowerCase().includes('you cannot bid on your own item')) {
+                    showCenteredError(data.message);
+                } else {
+                    showInPageAlert(data.message || 'Failed to place bid');
+                }
+            }
+        } catch (err) {
+            showInPageAlert('Error placing bid. Please try again.');
+        }
+    }
+})();
+
+    function chatWithSeller(sellerUsername) {
+        if (!sellerUsername) {
+            alert('Seller information not available');
+            return;
+        }
+
+        // Check if user is logged in
+        const isLoggedIn = document.body.getAttribute('data-authenticated') === '1';
+
+        // Use the same query-parameter flow as demo.ejs so chat.ejs can auto-start the conversation
+        const chatUrl = '/chat?seller=' + encodeURIComponent(sellerUsername);
+
+        if (!isLoggedIn) {
+            alert('Please login to chat with the seller');
+            // Redirect to login and then back to the chat URL after successful auth
+            window.location.href = '/login?redirect=' + encodeURIComponent(chatUrl);
+            return;
+        }
+
+        // Redirect to chat page which will read the `seller` query param and open the chat
+        window.location.href = chatUrl;
+    }
+
+    // Report Dialog Functionality
+    const reportButtons = document.querySelectorAll('.report-button');
+    const dialog = document.querySelector('.dialog-container');
+    const closeBtn = document.querySelector('.close-btn');
+    const cancelBtn = document.querySelector('.cancel-btn');
+    const submitBtn = document.querySelector('.submit-btn');
+
+    function showDialog() {
+        document.querySelector('.dialog-overlay').style.display = 'block';
+        dialog.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling while dialog is open
+    }
+
+    function hideDialog() {
+        document.querySelector('.dialog-overlay').style.display = 'none';
+        dialog.style.display = 'none';
+        document.body.style.overflow = '';
+        // Reset form
+        document.getElementById('issue-type').selectedIndex = 0;
+        document.getElementById('description').value = '';
+    }
+
+    reportButtons.forEach(button => {
+        button.addEventListener('click', showDialog);
+    });
+
+    closeBtn.addEventListener('click', hideDialog);
+    cancelBtn.addEventListener('click', hideDialog);
+
+        submitBtn.addEventListener('click', () => {
+        const issueType = document.getElementById('issue-type').value;
+        const description = document.getElementById('description').value;
+        // server-injected identifiers
+        const userId = "<%= user && user._id ? user._id : '' %>";
+        const itemId = "<%= item && item._id ? item._id : '' %>";
+        fetch('/report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, itemId, issueType, description })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Report submitted successfully!');
+            } else {
+                alert('Failed to submit report.');
+            }
+        })
+        .catch(error => {
+            alert('Error submitting report. Please try again.');
+        });
+
+        hideDialog();
+    });
+
+    // Socket.IO bid history real-time updates
+    const bidListEl = document.querySelector('.bid-list');
+
+    function renderBidHistory(bids) {
+        if (!bids || bids.length === 0) {
+            bidListEl.innerHTML = '<div style="text-align:center; color:#888; font-weight:600; padding:16px;">No Bids</div>';
+            return;
+        }
+
+        // Update the bid count display
+        const bidCountDisplays = document.querySelectorAll('.bid-count .auction-status-value');
+        bidCountDisplays.forEach(el => el.textContent = bids.length);
+        
+        // Sort bids by time, most recent first
+        bids.sort((a, b) => new Date(b.bidTime) - new Date(a.bidTime));
+
+        bidListEl.innerHTML = bids.map(function(bid) {
+            var avatar = bid.user?.profilePicture || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces';
+            var timeStr = new Date(bid.bidTime).toLocaleString('en-IN', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+            
+            // Ensure we're displaying the exact bid amount
+            const bidAmount = parseInt(bid.bidAmount || 0);
+            
+            return '<div class="bid-item">'
+                + '<div class="user-avatar">'
+                    + '<img src="' + avatar + '" alt="' + (bid.user?.username || 'User') + ' profile">'
+                + '</div>'
+                + '<div class="bid-content">'
+                    + '<div class="bid-left">'
+                        + '<div class="bidder">' + (bid.user?.username || 'Anonymous') + '</div>'
+                        + '<div class="bid-amount-container">'
+                            + '<span class="bid-label">Bid</span>'
+                            + '<span style="font-size: 0.875rem; color: #333; font-weight: 500;">₹' + bidAmount.toLocaleString('en-IN') + '</span>'
+                        + '</div>'
+                    + '</div>'
+                    + '<div class="bid-time">' + timeStr + '</div>'
+                + '</div>'
+            + '</div>';
+        }).join('');
+        
+        // Update highest bid display if needed
+        const highestBid = Math.max(...bids.map(b => parseInt(b.bidAmount) || 0));
+        if (highestBid > 0) {
+            const highestBidDisplays = document.querySelectorAll('.highest-bid-info .auction-status-value');
+            highestBidDisplays.forEach(el => el.innerHTML = '₹' + highestBid.toLocaleString('en-IN'));
+        }
+    }
+
+    async function fetchBidHistory() {
+        try {
+            const itemIdLocal = window.__bid_itemId || '';
+            const categoryLocal = window.__bid_category || '';
+            if (!itemIdLocal) return renderBidHistory([]);
+            const res = await fetch(`/item/${categoryLocal}/${itemIdLocal}/bid-history`);
+            const data = await res.json();
+            if (data.success) {
+                renderBidHistory(data.bids);
+            } else {
+                renderBidHistory([]);
+            }
+        } catch (err) {
+            renderBidHistory([]);
+        }
+    }
+
+    // Real-time updates
+    const socket = io();
+    const socketItemId = window.__bid_itemId || '';
+    if (socketItemId) socket.emit('join', 'item_' + socketItemId);
+    socket.on('newBid', bid => {
+        fetchBidHistory(); // Refresh bid history on new bid
+    });
+
+    // Initial load
+    fetchBidHistory();
+</script>
+
+<style>
+    /* Dialog and Overlay Styles */
+    .dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #d1d1d1cc;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 999;
+        animation: fadeOverlay 0.3s ease-out;
+    }
+
+    .dialog-container {
+        width: 90%;
+        max-width: 440px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        animation: fadeIn 0.3s ease-out;
+        margin: auto;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .dialog-header {
+        padding: 24px 24px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dialog-header .fa-triangle-exclamation {
+        color: #dc2626;
+        font-size: 1.5rem;
+        animation: glow 2s ease-in-out infinite;
+        filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.3));
+    }
+
+    @keyframes glow {
+        0%, 100% {
+            filter: drop-shadow(0 0 4px rgba(220, 38, 38, 0.3));
+            transform: scale(1);
+        }
+        50% {
+            filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.6));
+            transform: scale(1.05);
+        }
+    }
+
+    .dialog-header h2 {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: #1e293b;
+    }
+
+    .close-btn {
+        background: #f1f5f9;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #64748b;
+    }
+
+    .close-btn:hover {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .dialog-body {
+        padding: 24px;
+    }
+
+    .dialog-description {
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #334155;
+        font-size: 0.9rem;
+    }
+
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background: white;
+        color: #334155;
+    }
+
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .dialog-footer {
+        padding: 20px 24px;
+        background: #f8fafc;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .dialog-footer .cancel-btn {
+        padding: 10px 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: white;
+        color: #64748b;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .dialog-footer .cancel-btn:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+    .dialog-footer .submit-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        background: #ff2929;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .dialog-footer .submit-btn:hover {
+        background: #dc2626;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -60%);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    @keyframes fadeOverlay {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+<script src="/js/header-all.js"></script>
+<script>
+// Robust, live countdown timer for all .time-remaining elements (copied from auction.ejs)
+function parseDurationToSeconds(duration) {
+    if (!duration) return 0;
+    duration = String(duration).toLowerCase();
+    // Accept formats like "1 day", "3 days", "2 hours", "30 min"
+    // Also accept hh:mm:ss or mm:ss and plain seconds
+    // Try hh:mm:ss or mm:ss first
+    if (duration.indexOf(':') !== -1) {
+        const parts = duration.split(':').map(p => parseInt(p, 10));
+        if (parts.length === 3) {
+            return parts[0]*3600 + parts[1]*60 + (parts[2] || 0);
+        } else if (parts.length === 2) {
+            return parts[0]*60 + (parts[1] || 0);
+        }
+    }
+
+    // If it's a plain number, treat as seconds
+    if (!isNaN(Number(duration))) return Math.floor(Number(duration));
+
+    let total = 0;
+    const dayMatch = duration.match(/(\d+)\s*day/);
+    const hourMatch = duration.match(/(\d+)\s*hour/);
+    const minMatch = duration.match(/(\d+)\s*min/);
+    const secMatch = duration.match(/(\d+)\s*sec/);
+    if (dayMatch) total += parseInt(dayMatch[1], 10) * 86400;
+    if (hourMatch) total += parseInt(hourMatch[1], 10) * 3600;
+    if (minMatch) total += parseInt(minMatch[1], 10) * 60;
+    if (secMatch) total += parseInt(secMatch[1], 10);
+    return total;
+}
+
+function formatTimeLeft(seconds) {
+    if (seconds < 0) seconds = 0;
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (d > 0) {
+        return d + 'd ' + h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    } else {
+        return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    }
+}
+
+function updateAllCountdowns() {
+    const now = Date.now();
+    document.querySelectorAll('.time-remaining').forEach(function(span) {
+        const durationStr = span.getAttribute('data-duration');
+        const startStr = span.getAttribute('data-start');
+        const endStr = span.getAttribute('data-end') || span.getAttribute('data-endtime') || span.getAttribute('data-endtimeiso');
+        const durationSec = parseDurationToSeconds(durationStr);
+        let endTime;
+        if (endStr) {
+            const parsedEnd = Date.parse(endStr);
+            if (!isNaN(parsedEnd)) {
+                endTime = parsedEnd;
+            }
+        }
+        if (!endTime) {
+            let startTime = Date.parse(startStr);
+            if (!isNaN(startTime)) {
+                endTime = startTime + durationSec * 1000;
+            } else {
+                // Fallback: start now
+                endTime = now + durationSec * 1000;
+            }
+        }
+        let secondsLeft = Math.floor((endTime - now) / 1000);
+        const valueEl = span.querySelector('.auction-status-value') || span;
+        if (secondsLeft <= 0) {
+            if (valueEl) valueEl.textContent = 'Ended';
+            span.classList.add('ended');
+        } else {
+            if (valueEl) valueEl.textContent = formatTimeLeft(secondsLeft);
+            span.classList.remove('ended');
+        }
+    });
+}
+
+// Start the interval and ensure countdowns run after DOM load and after dynamic changes
+setInterval(updateAllCountdowns, 1000);
+document.addEventListener('DOMContentLoaded', updateAllCountdowns);
+const observer = new MutationObserver((mutationsList) => {
+    let needsUpdate = false;
+    for (const mutation of mutationsList) {
+        if ([...mutation.addedNodes].some(node => node.nodeType === 1 && node.querySelector && node.querySelector('.time-remaining'))) {
+            needsUpdate = true;
+        }
+    }
+    if (needsUpdate) updateAllCountdowns();
+});
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
+<%- include('footer') %>
+<script>
+    // Wishlist initial pairs from server
+    const userWishlistPairs = JSON.parse('<%- JSON.stringify(user && user.wishlist && user.wishlistModel ? user.wishlist.map((id, idx) => ({ id: String(id), model: user.wishlistModel[idx] })) : []) %>');
+
+    function isWishlisted(itemId, modelName) {
+        if (!itemId || !modelName) return false;
+        const idStr = String(itemId);
+        return userWishlistPairs.some(p => p.id === idStr && p.model === modelName);
+    }
+
+    async function toggleLike(event, button) {
+        event.preventDefault();
+        event.stopPropagation();
+        const itemId = button.getAttribute('data-item-id') || '<%= item._id %>';
+        const modelName = button.getAttribute('data-model-name') || '<%= category %>';
+        const userId = "<%= user && user._id ? user._id : '' %>";
+
+        if (!userId) {
+            alert('Please sign in to add to wishlist');
+            return;
+        }
+
+        const willLike = !button.classList.contains('liked');
+        if (willLike) {
+            button.classList.add('liked');
+            try {
+                const res = await fetch('/wishlist/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, itemId, modelName })
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    alert('Failed to add wishlist');
+                    button.classList.remove('liked');
+                } else {
+                    userWishlistPairs.push({ id: String(itemId), model: modelName });
+                }
+            } catch (err) {
+                alert('Error adding to wishlist');
+                button.classList.remove('liked');
+            }
+        } else {
+            button.classList.remove('liked');
+            try {
+                const res = await fetch('/wishlist/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, itemId, modelName })
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    alert('Failed to remove from wishlist');
+                    button.classList.add('liked');
+                } else {
+                    const idx = userWishlistPairs.findIndex(p => p.id === String(itemId) && p.model === modelName);
+                    if (idx !== -1) userWishlistPairs.splice(idx, 1);
+                }
+            } catch (err) {
+                alert('Error removing from wishlist');
+                button.classList.add('liked');
+            }
+        }
+    }
+</script>
+<script>
+    // Add fullscreen image viewer to the body
+    const fullscreenViewer = document.createElement('div');
+    fullscreenViewer.className = 'fullscreen-image-viewer';
+    fullscreenViewer.innerHTML = `
+        <div class="fullscreen-overlay"></div>
+        <div class="fullscreen-image-container">
+            <img src="" alt="Full size image">
+            <button class="close-fullscreen">×</button>
+        </div>
+    `;
+    document.body.appendChild(fullscreenViewer);
+
+    // Add styles for fullscreen viewer
+    const styles = document.createElement('style');
+    styles.textContent = `
+        .fullscreen-image-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
+        .fullscreen-image-viewer.active {
+            display: block;
+        }
+        .fullscreen-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+        }
+        .fullscreen-image-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90vh;
+        }
+        .fullscreen-image-container img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+        .close-fullscreen {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 36px;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+    `;
+    document.head.appendChild(styles);
+
+    // Manual image slider wiring: prev/next buttons and fullscreen
+    (function() {
+        try {
+            const images = Array.from(document.querySelectorAll('.slider-image'));
+            if (!images || images.length <= 1) {
+                // hide controls if not needed
+                const p = document.querySelector('.slider-prev');
+                const n = document.querySelector('.slider-next');
+                if (p) p.style.display = 'none';
+                if (n) n.style.display = 'none';
+                return;
+            }
+
+            let current = 0;
+            const prevBtn = document.querySelector('.slider-prev');
+            const nextBtn = document.querySelector('.slider-next');
+
+            // Setup fullscreen viewer functionality
+            const viewer = document.querySelector('.fullscreen-image-viewer');
+            const viewerImg = viewer.querySelector('img');
+            const closeBtn = viewer.querySelector('.close-fullscreen');
+            
+            function show(index) {
+                current = (index + images.length) % images.length;
+                images.forEach((img, i) => {
+                    img.style.display = i === current ? 'block' : 'none';
+                });
+            }
+
+            // Show fullscreen on image click
+            images.forEach(img => {
+                img.style.cursor = 'zoom-in';
+                img.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    viewerImg.src = this.src;
+                    viewer.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Close fullscreen view
+            closeBtn.addEventListener('click', () => {
+                viewer.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            
+            viewer.addEventListener('click', (e) => {
+                if (e.target === viewer || e.target.classList.contains('fullscreen-overlay')) {
+                    viewer.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            if (prevBtn) prevBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                show(current - 1);
+            });
+            if (nextBtn) nextBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                show(current + 1);
+            });
+
+            // Allow clicking the image to go to next (optional - keeps behavior simple)
+            images.forEach(img => img.addEventListener('click', function(e) {
+                e.stopPropagation();
+                show(current + 1);
+            }));
+
+        } catch (err) {
+        }
+    })();
+    </script>
+</body>

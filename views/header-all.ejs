@@ -1,0 +1,126 @@
+<!-- Header Partial: Only header and related popups/sidebar, no <html>, <head>, <body>, or <style> tags -->
+<header>
+  <div class="header-container">
+    <div class="header-left">
+      <i class="fas fa-bars" style="font-size:22px;margin-right:15px;cursor:pointer;"></i>
+      <div class="logo-container">
+        <img src="/Photos/logo.jpg" alt="Logo" onclick="window.location.href='/'">
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="authBlock"></div>
+      <!-- Notifications dropdown (bell button is rendered elsewhere) -->
+      <div id="notificationWrapper" style="position:relative;display:inline-block;margin-left:12px;">
+        <div id="notificationsDropdown" style="display:none;position:absolute;right:0;top:36px;min-width:220px;max-width:420px;background:#fff;border:1px solid #e6e6e6;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.08);z-index:2500;padding:6px;overflow:hidden;">
+          <div id="notificationsList" style="max-height:360px;overflow:auto;padding:6px;">
+            <div style="padding:12px;color:#666">No notifications</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+    <script>
+      (function(){
+        const icon = document.getElementById('notificationIcon');
+        const dropdown = document.getElementById('notificationsDropdown');
+        const list = document.getElementById('notificationsList');
+        let loaded = false;
+
+        async function fetchNotifications(){
+          try {
+            const res = await fetch('/api/notifications', { credentials: 'same-origin' });
+            if (!res.ok) throw new Error('Not authenticated or server error');
+            const data = await res.json();
+            if (!data.success) throw new Error('No notifications');
+            renderNotifications(data.notifications || []);
+            loaded = true;
+          } catch (e) {
+            list.innerHTML = '<div style="padding:12px;color:#666">Login to see notifications</div>';
+          }
+        }
+
+        function renderNotifications(notifs){
+          if (!notifs || notifs.length === 0) {
+            list.innerHTML = '<div style="padding:12px;color:#666">No notifications</div>';
+            return;
+          }
+          list.innerHTML = '';
+          const ul = document.createElement('ul');
+          ul.style.listStyle = 'none';
+          ul.style.margin = '0';
+          ul.style.padding = '0';
+          ul.style.maxHeight = '320px';
+          ul.style.overflow = 'auto';
+
+          notifs.forEach(n => {
+            const li = document.createElement('li');
+            li.style.padding = '10px 12px';
+            li.style.borderBottom = '1px solid #f4f4f4';
+            li.innerHTML = `
+              <div style="font-weight:600;color:#111">${escapeHtml(n.title || 'Notification')}</div>
+              <div style="color:#666;margin-top:6px">${escapeHtml(n.message || ('You won the bid — ₹' + (n.amount || '')))}</div>
+              <div style="font-size:12px;color:#888;margin-top:6px">${escapeHtml(n.time || '')}</div>
+            `;
+            ul.appendChild(li);
+          });
+
+          list.appendChild(ul);
+        }
+
+        function escapeHtml(str){
+          return String(str).replace(/[&<>"'\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'\/'}[s]));
+        }
+
+        // Delegated click handler so it works even if the bell is rendered later
+        document.addEventListener('click', (e) => {
+          const target = e.target;
+          const clickedBell = Boolean(target && (target.id === 'notificationIcon' || target.closest && target.closest('#notificationIcon')) || (target.classList && target.classList.contains('fa-bell')));
+          if (clickedBell) {
+            e.stopPropagation();
+            if (dropdown.style.display === 'none' || !dropdown.style.display) {
+              dropdown.style.display = 'block';
+              if (!loaded) fetchNotifications();
+            } else {
+              dropdown.style.display = 'none';
+            }
+            return;
+          }
+
+          // Hide dropdown when clicking outside
+          if (dropdown && dropdown.style && dropdown.style.display === 'block') {
+            if (!dropdown.contains(target)) {
+              dropdown.style.display = 'none';
+            }
+          }
+        });
+      })();
+    </script>
+        <!-- Global in-page alert (used instead of native alert()) -->
+        <div id="inPageAlert" role="alert" aria-live="polite" style="display:none;position:fixed;top:18px;right:18px;background:#0f1724;color:#fff;padding:18px 22px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.6);z-index:99999;max-width:520px;font-family:Inter, Arial, sans-serif;">
+          <div style="font-weight:700;font-size:1.05rem;margin-bottom:6px">localhost:5000 says</div>
+          <div id="inPageAlertBody" style="color:#e6e6e6">Message</div>
+          <div style="text-align:right;margin-top:10px"><button id="inPageAlertOk" style="background:#3b82f6;color:#fff;padding:8px 14px;border-radius:10px;border:none;cursor:pointer">OK</button></div>
+        </div>
+        <script>
+          // Global helper to show a non-blocking in-page alert. Falls back to native alert if DOM missing.
+          function showInPageAlert(msg){
+            try{
+              const container = document.getElementById('inPageAlert');
+              const body = document.getElementById('inPageAlertBody');
+              if (!container || !body) return alert(msg);
+              body.textContent = msg || '';
+              container.style.display = 'block';
+              clearTimeout(window._inPageAlertTimeout);
+              window._inPageAlertTimeout = setTimeout(()=>{ container.style.display='none'; }, 5000);
+            } catch(e){ console.error(e); alert(msg); }
+          }
+          document.addEventListener('click', function(e){ if (e.target && e.target.id === 'inPageAlertOk') { const c = document.getElementById('inPageAlert'); if(c) c.style.display='none'; } });
+        </script>
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay">
+  <div class="sidebar-container">
+    <i class="fas fa-times sidebar-close" id="sidebarClose"></i>
+    <div id="sidebarContent"></div>
+  </div>
+</div>

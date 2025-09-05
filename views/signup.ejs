@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <script src="https://kit.fontawesome.com/943c3c74fd.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In / Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Container for flip animation */
+        .flip-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 360px;
+            height: 580px;
+            /* Fixed height for both cards */
+        }
+
+        @media (min-width: 768px) {
+            .flip-container {
+                height: 580px;
+            }
+        }
+
+        .flipper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-container.flipped .flipper {
+            transform: rotateY(180deg);
+        }
+
+        /* Shared styles for both cards */
+        .overlay-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+            height: 100%;
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: white;
+        }
+
+        /* Front card (sign in) */
+        .signin-card {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        /* Back card (sign up) */
+        .signup-card {
+            transform: rotateY(180deg);
+        }
+
+        .cancel-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .cancel-btn:hover {
+            color: #000;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .image-container {
+            height: 180px;
+            /* Reduced height for better balance */
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .login-box {
+            background: white;
+            padding: 20px 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-box h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .input-group div {
+            text-align: left;
+        }
+
+        label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.95rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 2px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #02511A;
+            box-shadow: 0 0 0 2px rgba(2, 81, 26, 0.1);
+        }
+
+        input.error {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+        }
+
+        input.success {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 1rem;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: #02511A;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.875rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 4px 0 0 0;
+            cursor: pointer;
+            accent-color: #02511A;
+        }
+
+        .checkbox-group label {
+            font-weight: 400;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        .checkbox-group a {
+            color: #02511A;
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .signup-link a {
+            color: #02511A;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.125rem;
+            color: white;
+            background-color: #02511A;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+            margin-top: auto;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            background-color: #2c633c;
+        }
+
+        .login-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .login-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: #27ae60;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        /* Profile picture upload styles (for sign up) */
+        .upload-group {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px dashed #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .upload-circle:hover {
+            background-color: #ebebeb;
+            border-color: #02511A;
+        }
+
+        .upload-circle input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 24px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .upload-circle:hover .upload-icon {
+            color: #02511A;
+        }
+
+        .upload-text {
+            font-size: 0.875rem;
+            color: #555;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .upload-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        /* Mobile styles - full width and no flip */
+        @media (max-width: 767px) {
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+
+            .flip-container {
+                perspective: none;
+                height: 100vh;
+                max-width: 100%;
+                width: 100%;
+                border-radius: 0;
+            }
+
+            .flipper {
+                transform-style: flat;
+                height: 100%;
+                transition: none;
+            }
+
+            /* FIXED: Remove all transforms on mobile */
+            .flip-container .flipper {
+                transform: none !important;
+            }
+            
+            /* Allow flip animation to work */
+            .flip-container.flipped .flipper {
+                transform: rotateY(180deg) !important;
+            }
+
+            .overlay-container {
+                position: relative;
+                height: 100%;
+                backface-visibility: visible;
+                border-radius: 0;
+                width: 100%;
+                transform: none !important;
+            }
+
+            /* FIXED: Remove transforms from both cards on mobile */
+            .signin-card,
+            .signup-card {
+                transform: none !important;
+            }
+            
+            /* Ensure proper card visibility */
+            .signin-card {
+                transform: rotateY(0deg) !important;
+            }
+            
+            .signup-card {
+                transform: rotateY(180deg) !important;
+            }
+
+            .signup-card {
+                display: none;
+            }
+
+            .flip-container.flipped .signin-card {
+                display: none;
+            }
+
+            .flip-container.flipped .signup-card {
+                display: flex;
+            }
+
+            .login-box {
+                padding: 20px;
+            }
+
+            .image-container {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flip-container" id="flipContainer">
+        <div class="flipper">
+            <!-- Sign In Card (Front) -->
+            <div class="overlay-container signin-card">
+                <button class="cancel-btn" onclick="closeModal()">
+                    <i class="fas fa-xmark"></i>
+                </button>
+
+                <div class="image-container">
+                    <img src="/Photos/login.png"
+                        alt="Logo">
+                </div>
+
+                <div class="login-box">
+                    <h2>Sign In to Continue</h2>
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <div>
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                                <div class="error-message" id="emailError"></div>
+                                <div class="success-message" id="emailSuccess"></div>
+                            </div>
+
+                            <div>
+                                <label for="password">Password</label>
+                                <div class="input-wrapper">
+                                    <input type="password" id="password" name="password"
+                                        placeholder="Enter your password" required />
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePassword('password', 'passwordToggleIcon')">
+                                        <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="passwordError"></div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" name="terms" required />
+                            <label for="terms">
+                                I agree to the <a href="#" onclick="showTerms()">Terms of Service</a>
+                                and <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <div class="error-message" id="termsError"></div>
+
+                        <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+
+                        <div class="signup-link">
+                            Don't have an account? <a href="#" onclick="switchToSignup()">Sign up</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sign Up Card (Back) -->
+            <div class="overlay-container signup-card">
+                <button class="cancel-btn" onclick="closeModal()">
+                    <i class="fas fa-xmark"></i>
+                </button>
+
+                <div class="login-box">
+                    <h2>Create Your Account</h2>
+                    <form id="signupForm">
+                        <div class="upload-group">
+                            <div class="upload-circle" id="uploadContainer">
+                                <i class="fas fa-user upload-icon" id="upload-icon"></i>
+                                <img id="preview" class="upload-preview" onclick="triggerUpload()" />
+                                <input type="file" id="pfp" name="pfp" accept="image/*"
+                                    onchange="previewImage(event)" />
+                            </div>
+                            <div class="upload-text">Click to upload profile picture</div>
+                            <div class="error-message" id="pfpError"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <div>
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" placeholder="Choose a username"
+                                    required />
+                                <div class="error-message" id="usernameError"></div>
+                            </div>
+
+                            <div>
+                                <label for="signupEmail">Email</label>
+                                <input type="email" id="signupEmail" name="email" placeholder="Enter your email"
+                                    required />
+                                <div class="error-message" id="signupEmailError"></div>
+                            </div>
+
+                            <div>
+                                <label for="signupPassword">Password</label>
+                                <div class="input-wrapper">
+                                    <input type="password" id="signupPassword" name="password"
+                                        placeholder="Enter your password" required />
+                                    <button type="button" class="password-toggle"
+                                        onclick="togglePassword('signupPassword', 'signupPasswordToggleIcon')">
+                                        <i class="fas fa-eye" id="signupPasswordToggleIcon"></i>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="signupPasswordError"></div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="signupTerms" name="terms" required />
+                            <label for="signupTerms">
+                                I agree to the <a href="#" onclick="showTerms()">Terms of Service</a>
+                                and <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <div class="error-message" id="signupTermsError"></div>
+
+                        <button type="submit" class="login-btn" id="signupBtn">Create Account</button>
+
+                        <div class="signup-link">
+                            Already have an account? <a href="#" onclick="switchToLogin()">Sign in</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div id="otpModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+      <div style="background:#fff; padding:32px 24px; border-radius:12px; max-width:340px; width:100%; box-shadow:0 2px 16px rgba(0,0,0,0.15); text-align:center; position:relative;">
+        <button onclick="closeOtpModal()" style="position:absolute; top:12px; right:12px; background:none; border:none; font-size:22px; cursor:pointer; color:#888;">&times;</button>
+        <h2 style="margin-bottom:18px;">Verify Your Email</h2>
+        <p style="font-size:0.98rem; margin-bottom:18px;">Enter the 6-digit OTP sent to your email. After verification, you'll be automatically logged in and redirected to the dashboard.</p>
+        <input type="text" id="otpInput" maxlength="6" placeholder="Enter OTP" style="width:100%; padding:12px; font-size:1.1rem; border-radius:8px; border:1px solid #ccc; margin-bottom:10px; text-align:center; letter-spacing:4px;" />
+        <div id="otpError" style="color:#e74c3c; font-size:0.92rem; min-height:18px; margin-bottom:8px;"></div>
+        <button onclick="verifyOtp()" id="verifyOtpBtn" style="width:100%; padding:10px; background:#02511A; color:#fff; border:none; border-radius:8px; font-size:1.1rem; font-weight:600; margin-bottom:10px; cursor:pointer;">Verify & Login</button>
+        <button onclick="resendOtp()" id="resendOtpBtn" style="width:100%; padding:8px; background:none; color:#02511A; border:none; font-size:0.98rem; cursor:pointer; text-decoration:underline;">Resend OTP</button>
+        <div id="otpSuccess" style="color:#27ae60; font-size:0.92rem; min-height:18px; margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <script>
+        // Form validation patterns
+        const validationRules = {
+            email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+            username: /^[a-zA-Z0-9_]{3,20}$/
+        };
+
+        // Password visibility toggle
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Profile picture upload (for sign up)
+        function triggerUpload() {
+            document.getElementById('pfp').click();
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('preview');
+            const icon = document.getElementById('upload-icon');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    icon.style.display = 'none';
+                    clearValidation('pfp');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Validation functions
+        function validateEmail(email) {
+            return validationRules.email.test(email);
+        }
+
+        function validatePassword(password) {
+            return validationRules.password.test(password);
+        }
+
+        function validateUsername(username) {
+            return validationRules.username.test(username);
+        }
+
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+            const successElement = document.getElementById(fieldId + 'Success');
+
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+            }
+
+            if (inputElement) {
+                inputElement.classList.add('error');
+                inputElement.classList.remove('success');
+            }
+
+            if (successElement) {
+                successElement.classList.remove('show');
+            }
+        }
+
+        function showSuccess(fieldId, message = '') {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+            const successElement = document.getElementById(fieldId + 'Success');
+
+            if (errorElement) {
+                errorElement.classList.remove('show');
+            }
+
+            if (inputElement) {
+                inputElement.classList.remove('error');
+                inputElement.classList.add('success');
+            }
+
+            if (successElement && message) {
+                successElement.textContent = message;
+                successElement.classList.add('show');
+            }
+        }
+
+        function clearValidation(fieldId) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+            const successElement = document.getElementById(fieldId + 'Success');
+
+            if (errorElement) {
+                errorElement.classList.remove('show');
+            }
+
+            if (inputElement) {
+                inputElement.classList.remove('error', 'success');
+            }
+
+            if (successElement) {
+                successElement.classList.remove('show');
+            }
+        }
+
+        // Real-time validation for sign in
+        document.getElementById('email').addEventListener('input', function () {
+            const email = this.value.trim();
+            if (email === '') {
+                clearValidation('email');
+            } else if (!validateEmail(email)) {
+                showError('email', 'Please enter a valid email address');
+            } else {
+                showSuccess('email', 'Valid email format');
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function () {
+            const password = this.value;
+            if (password === '') {
+                clearValidation('password');
+            } else if (!validatePassword(password)) {
+                showError('password', 'Password must be at least 8 characters long');
+            } else {
+                showSuccess('password');
+            }
+        });
+
+        // Real-time validation for sign up
+        document.getElementById('signupEmail').addEventListener('input', function () {
+            const email = this.value.trim();
+            if (email === '') {
+                clearValidation('signupEmail');
+            } else if (!validateEmail(email)) {
+                showError('signupEmail', 'Please enter a valid email address');
+            } else {
+                clearValidation('signupEmail');
+            }
+        });
+
+        document.getElementById('signupPassword').addEventListener('input', function () {
+            const password = this.value;
+            if (password === '') {
+                clearValidation('signupPassword');
+            } else if (!validatePassword(password)) {
+                showError('signupPassword', 'Password must be at least 8 characters with lowercase, uppercase, number, and special character');
+            } else {
+                clearValidation('signupPassword');
+            }
+        });
+
+        document.getElementById('username').addEventListener('input', function () {
+            const username = this.value.trim();
+            if (username === '') {
+                clearValidation('username');
+            } else if (!validateUsername(username)) {
+                showError('username', 'Username must be 3-20 characters (letters, numbers, _)');
+            } else {
+                clearValidation('username');
+            }
+        });
+
+        // Sign in form submission
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const email = formData.get('email').trim();
+            const password = formData.get('password');
+            const terms = formData.get('terms');
+
+            let isValid = true;
+
+            // Validate email
+            if (!email) {
+                showError('email', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('email', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            // Validate password
+            if (!password) {
+                showError('password', 'Password is required');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                showError('password', 'Password must be at least 8 characters long');
+                isValid = false;
+            }
+
+            // Validate terms
+            if (!terms) {
+                const termsError = document.getElementById('termsError');
+                termsError.textContent = 'You must agree to the Terms of Service and Privacy Policy';
+                termsError.classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('termsError').classList.remove('show');
+            }
+
+            if (isValid) {
+                const loginBtn = document.getElementById('loginBtn');
+                loginBtn.classList.add('loading');
+                loginBtn.disabled = true;
+
+                // API call to backend
+                fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+
+                    if (data.success) {
+                        // Store token in localStorage
+                        localStorage.setItem('token', data.data.token);
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                        
+                        showNotification('Welcome back!', 'success');
+                        
+                        // Redirect to dashboard after 1.5 seconds
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1500);
+                    } else {
+                        showNotification(data.message || 'Login failed', 'error');
+                    }
+                })
+                .catch(error => {
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                    console.error('Login error:', error);
+                    showNotification('Network error. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Sign up form submission
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const username = formData.get('username').trim();
+            const email = formData.get('email').trim();
+            const password = formData.get('password');
+            const pfp = formData.get('pfp');
+            const terms = formData.get('terms');
+
+            let isValid = true;
+
+            // Validate profile picture (optional)
+            if (!pfp || !pfp.name) {
+                showError('pfp', 'Profile picture is recommended');
+            }
+
+            // Validate username
+            if (!username) {
+                showError('username', 'Username is required');
+                isValid = false;
+            } else if (!validateUsername(username)) {
+                showError('username', 'Username must be 3-20 characters (letters, numbers, _)');
+                isValid = false;
+            }
+
+            // Validate email
+            if (!email) {
+                showError('signupEmail', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('signupEmail', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            // Validate password
+            if (!password) {
+                showError('signupPassword', 'Password is required');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                showError('signupPassword', 'Password must be at least 8 characters');
+                isValid = false;
+            }
+
+            // Validate terms
+            if (!terms) {
+                const termsError = document.getElementById('signupTermsError');
+                termsError.textContent = 'You must agree to the Terms of Service and Privacy Policy';
+                termsError.classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('signupTermsError').classList.remove('show');
+            }
+
+            if (isValid) {
+                const signupBtn = document.getElementById('signupBtn');
+                signupBtn.classList.add('loading');
+                signupBtn.disabled = true;
+
+                // Create FormData for file upload
+                const signupFormData = new FormData();
+                signupFormData.append('username', username);
+                signupFormData.append('email', email);
+                signupFormData.append('password', password);
+                
+                if (pfp && pfp.name) {
+                    signupFormData.append('profilePicture', pfp);
+                }
+
+                // API call to backend
+                fetch('/api/auth/signup', {
+                    method: 'POST',
+                    body: signupFormData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    signupBtn.classList.remove('loading');
+                    signupBtn.disabled = false;
+
+                    if (data.success) {
+                        // Store email for OTP verification
+                        window.signupEmailForOtp = email;
+                        
+                        // Check if OTP was included in response (email sending failed)
+                        if (data.data && data.data.otp) {
+                            // Show OTP modal with the provided OTP
+                            showOtpModal();
+                            // Pre-fill the OTP input for testing
+                            document.getElementById('otpInput').value = data.data.otp;
+                            showNotification('Account created! Email service unavailable. Use the OTP shown above for verification.', 'success');
+                        } else {
+                            // Normal flow - show OTP modal
+                            showOtpModal();
+                            showNotification('Account created! Please check your email for the OTP. After verification, you\'ll be automatically logged in.', 'success');
+                        }
+                    } else {
+                        showNotification(data.message || 'Signup failed', 'error');
+                    }
+                })
+                .catch(error => {
+                    signupBtn.classList.remove('loading');
+                    signupBtn.disabled = false;
+                    console.error('Signup error:', error);
+                    showNotification('Network error. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type) {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Modal functions
+        function closeModal() {
+            window.history.back();
+        }
+
+        function showTerms() {
+            alert('Terms of Service would open here');
+        }
+
+        function showPrivacy() {
+            alert('Privacy Policy would open here');
+        }
+
+        // Switch between sign in and sign up
+        function switchToSignup() {
+            const flipContainer = document.getElementById('flipContainer');
+            flipContainer.classList.add('flipped');
+
+            // Reset form
+            document.getElementById('signupForm').reset();
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('upload-icon').style.display = 'flex';
+            clearValidation('pfp');
+            clearValidation('username');
+            clearValidation('signupEmail');
+            clearValidation('signupPassword');
+            document.getElementById('signupTermsError').classList.remove('show');
+        }
+
+        function switchToLogin() {
+            const flipContainer = document.getElementById('flipContainer');
+            flipContainer.classList.remove('flipped');
+
+            // Reset form
+            document.getElementById('loginForm').reset();
+            clearValidation('email');
+            clearValidation('password');
+            document.getElementById('termsError').classList.remove('show');
+        }
+
+        // OTP Modal logic
+        function showOtpModal() {
+            document.getElementById('otpModal').style.display = 'flex';
+            document.getElementById('otpInput').value = '';
+            document.getElementById('otpError').textContent = '';
+            document.getElementById('otpSuccess').textContent = '';
+        }
+        function closeOtpModal() {
+            document.getElementById('otpModal').style.display = 'none';
+        }
+        function verifyOtp() {
+            const otp = document.getElementById('otpInput').value.trim();
+            const email = window.signupEmailForOtp;
+            const otpError = document.getElementById('otpError');
+            const otpSuccess = document.getElementById('otpSuccess');
+            otpError.textContent = '';
+            otpSuccess.textContent = '';
+            if (!otp || otp.length !== 6 || !/^[0-9]{6}$/.test(otp)) {
+                otpError.textContent = 'Please enter a valid 6-digit OTP.';
+                return;
+            }
+            document.getElementById('verifyOtpBtn').disabled = true;
+            fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('verifyOtpBtn').disabled = false;
+                if (data.success) {
+                    console.log('OTP verification successful:', data);
+                    otpSuccess.textContent = 'Email verified! Logging you in...';
+                    
+                    // Store token and user data for auto-login
+                    if (data.data && data.data.token) {
+                        console.log('Token received, storing in localStorage');
+                        localStorage.setItem('token', data.data.token);
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                        console.log('Token and user data stored successfully');
+                        
+                        setTimeout(() => {
+                            closeOtpModal();
+                            showNotification('Welcome! Redirecting to demo...', 'success');
+                            
+                            // Redirect to dashboard after successful verification
+                            setTimeout(() => {
+                                window.location.href = window.location.origin + '/';
+                            }, 1500);
+                        }, 1500);
+                    } else {
+                        // Fallback if no token (shouldn't happen with new backend)
+                        otpSuccess.textContent = 'Email verified! Redirecting...';
+                        setTimeout(() => {
+                            closeOtpModal();
+                            showNotification('Account verified! Redirecting...', 'success');
+                            window.location.href = '/';
+                        }, 1500);
+                    }
+                } else {
+                    otpError.textContent = data.message || 'Invalid OTP.';
+                }
+            })
+            .catch(() => {
+                document.getElementById('verifyOtpBtn').disabled = false;
+                otpError.textContent = 'Network error. Please try again.';
+            });
+        }
+        function resendOtp() {
+            const email = window.signupEmailForOtp;
+            const otpError = document.getElementById('otpError');
+            const otpSuccess = document.getElementById('otpSuccess');
+            otpError.textContent = '';
+            otpSuccess.textContent = '';
+            document.getElementById('resendOtpBtn').disabled = true;
+            fetch('/api/auth/resend-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('resendOtpBtn').disabled = false;
+                if (data.success) {
+                    otpSuccess.textContent = 'OTP resent to your email.';
+                } else {
+                    otpError.textContent = data.message || 'Could not resend OTP.';
+                }
+            })
+            .catch(() => {
+                document.getElementById('resendOtpBtn').disabled = false;
+                otpError.textContent = 'Network error. Please try again.';
+            });
+        }
+    </script>
+</body>
+
+</html>

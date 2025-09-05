@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Payment Gateway</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #334155;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin: 20px auto;
+        }
+
+        header {
+            background: #fff;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 22px;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            color: #2563eb;
+            font-size: 26px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .plan-info {
+            padding: 20px 32px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .plan-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .plan-price {
+            font-weight: 700;
+            color: #2563eb;
+            font-size: 26px;
+        }
+
+        .payment-section {
+            padding: 28px 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #2563eb;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .payment-method {
+            flex: 1;
+            padding: 16px 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-method:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .payment-method.selected {
+            border-color: #2563eb;
+            background-color: #f0f7ff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #64748b;
+            height: 28px;
+        }
+
+        .payment-method.selected .payment-icon {
+            color: #2563eb;
+        }
+
+        .payment-name {
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .card-icons {
+            position: absolute;
+            right: 12px;
+            top: 42px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-icon {
+            color: #94a3b8;
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .pay-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .pay-button:active {
+            transform: translateY(0);
+        }
+
+        .processing-overlay, .success-overlay, .error-overlay, .confirm-overlay, .simple-success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .processing-overlay.active, .success-overlay.active, .error-overlay.active, .confirm-overlay.active, .simple-success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .processing-content, .success-content, .error-content, .confirm-content, .simple-success-content {
+            text-align: center;
+            max-width: 400px;
+            padding: 40px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .processing-overlay.active .processing-content,
+        .success-overlay.active .success-content,
+        .error-overlay.active .error-content,
+        .confirm-overlay.active .confirm-content,
+        .simple-success-overlay.active .simple-success-content {
+            transform: translateY(0);
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-icon, .error-icon, .simple-success-icon {
+            width: 70px;
+            height: 70px;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            margin: 0 auto 20px;
+            animation: scaleUp 0.5s ease-out;
+        }
+
+        .success-icon {
+            background-color: #10b981;
+        }
+
+        .error-icon {
+            background-color: #ef4444;
+        }
+
+        .simple-success-icon {
+            background-color: #10b981;
+        }
+
+        @keyframes scaleUp {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .overlay-title {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1e293b;
+        }
+
+        .overlay-message {
+            color: #64748b;
+            margin-bottom: 28px;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        .transaction-details {
+            background-color: #f8fafc;
+            padding: 16px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .transaction-details p {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .transaction-details span {
+            font-weight: 500;
+        }
+
+        .ok-button, .ok-button-error, .ok-button-simple-success {
+            padding: 14px 28px;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .ok-button {
+            background-color: #2563eb;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .ok-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .ok-button-error {
+            background-color: #ef4444;
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+        }
+
+        .ok-button-error:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(239, 68, 68, 0.25);
+        }
+
+        .ok-button-simple-success {
+            background-color: #2563eb;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .confirm-button-yes, .confirm-button-no {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .confirm-button-yes {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .confirm-button-yes:hover {
+            background-color: #dc2626;
+        }
+
+        .confirm-button-no {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+        .confirm-button-no:hover {
+            background-color: #cbd5e1;
+        }
+
+        footer {
+            padding: 20px 32px;
+            text-align: center;
+            background-color: #f8fafc;
+            color: #64748b;
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .secure-notice {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .upi-section, .wallet-section {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .wallet-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .wallet-option {
+            padding: 15px 10px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .wallet-option:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .wallet-option.selected {
+            border-color: #2563eb;
+            background-color: #f0f7ff;
+        }
+
+        .wallet-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #64748b;
+            height: 28px;
+        }
+
+        .wallet-option.selected .wallet-icon {
+            color: #2563eb;
+        }
+
+        .wallet-name {
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .upi-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .upi-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .verify-upi {
+            padding: 14px 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .verify-upi:hover {
+            background-color: #1d4ed8;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                border-radius: 14px;
+            }
+            
+            header, .plan-info, .payment-section {
+                padding: 20px;
+            }
+            
+            .payment-methods {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .wallet-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .processing-content, .success-content, .error-content, .confirm-content {
+                padding: 30px 20px;
+                margin: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-lock logo-icon"></i>
+                <span>SecurePay</span>
+            </div>
+            <button class="close-btn">&times;</button>
+        </header>
+        
+        <div class="plan-info">
+            <div class="plan-name">Premium Subscription</div>
+            <div class="plan-price">$19.99</div>
+        </div>
+        
+        <div class="payment-section">
+            <h2 class="section-title">
+                <i class="fas fa-credit-card"></i>
+                <span>Payment Details</span>
+            </h2>
+            
+            <div class="payment-methods">
+                <div class="payment-method selected" data-method="card">
+                    <div class="payment-icon"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="payment-name">Credit Card</div>
+                </div>
+                <div class="payment-method" data-method="upi">
+                    <div class="payment-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <div class="payment-name">UPI</div>
+                </div>
+                <div class="payment-method" data-method="wallet">
+                    <div class="payment-icon"><i class="fa-solid fa-wallet"></i></div>
+                    <div class="payment-name">Wallet</div>
+                </div>
+            </div>
+            
+            <div class="card-payment">
+                <div class="form-group">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+                    <div class="card-icons">
+                        <i class="fab fa-cc-visa card-icon"></i>
+                        <i class="fab fa-cc-mastercard card-icon"></i>
+                        <i class="fab fa-cc-amex card-icon"></i>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiry-date">Expiry Date</label>
+                        <input type="text" id="expiry-date" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Cardholder Name</label>
+                    <input type="text" id="name" placeholder="John Doe">
+                </div>
+            </div>
+            
+            <div class="upi-section">
+                <div class="form-group">
+                    <label for="upi-id">UPI ID</label>
+                    <div class="upi-input-group">
+                        <input type="text" id="upi-id" placeholder="yourname@upi">
+                        <button class="verify-upi">Verify</button>
+                    </div>
+                </div>
+                <p style="font-size: 14px; color: #64748b; margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> You will be redirected to your UPI app for payment
+                </p>
+            </div>
+            
+            <div class="wallet-section">
+                <p style="margin-bottom: 15px; color: #64748b;">Select your wallet</p>
+                <div class="wallet-options">
+                    <div class="wallet-option">
+                        <div class="wallet-icon"><i class="fab fa-google-pay"></i></div>
+                        <div class="wallet-name">Google Pay</div>
+                    </div>
+                    <div class="wallet-option">
+                        <div class="wallet-icon"><i class="fab fa-amazon-pay"></i></div>
+                        <div class="wallet-name">Amazon Pay</div>
+                    </div>
+                    <div class="wallet-option">
+                        <div class="wallet-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="wallet-name">PhonePe</div>
+                    </div>
+                    <div class="wallet-option">
+                        <div class="wallet-icon"><i class="fab fa-apple-pay"></i></div>
+                        <div class="wallet-name">Apple Pay</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="pay-button">
+                <i class="fas fa-lock"></i> Pay $19.99 Now
+            </button>
+        </div>
+        
+        <footer>
+            <p>Your payment is secure and encrypted</p>
+            <div class="secure-notice">
+                <i class="fa-solid fa-lock"></i>
+                <span>256-bit SSL Encryption</span>
+            </div>
+        </footer>
+    </div>
+    
+    <div class="processing-overlay">
+        <div class="processing-content">
+            <div class="loader"></div>
+            <h2 class="overlay-title">Processing Payment</h2>
+            <p class="overlay-message">Please wait while we process your payment. Do not refresh or close this window.</p>
+        </div>
+    </div>
+    
+    <div class="success-overlay">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 class="overlay-title">Payment Successful!</h2>
+            <p class="overlay-message">Your payment has been processed successfully. A receipt has been sent to your email.</p>
+            
+            <div class="transaction-details">
+                <p>Amount: <span>$19.99</span></p>
+                <p>Transaction ID: <span>TX-789456123</span></p>
+                <p>Date: <span>Oct 15, 2023</span></p>
+                <p>Method: <span id="payment-method-used">Credit Card</span></p>
+            </div>
+            
+            <button class="ok-button">Continue to Dashboard</button>
+        </div>
+    </div>
+
+    <div class="error-overlay">
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <h2 class="overlay-title">Payment Failed</h2>
+            <p class="overlay-message" id="error-message-text"></p>
+            <button class="ok-button-error">Try Again</button>
+        </div>
+    </div>
+
+    <div class="confirm-overlay">
+        <div class="confirm-content">
+            <h2 class="overlay-title">Are you sure?</h2>
+            <p class="overlay-message">Do you want to cancel the payment?</p>
+            <div class="confirm-buttons">
+                <button class="confirm-button-yes">Yes, Cancel</button>
+                <button class="confirm-button-no">No, Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="simple-success-overlay">
+        <div class="simple-success-content">
+            <div class="simple-success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 class="overlay-title">UPI ID Verified</h2>
+            <p class="overlay-message" id="simple-success-message-text"></p>
+            <button class="ok-button-simple-success">OK</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const planId = urlParams.get('planId');
+            const amount = urlParams.get('amount');
+
+            // Set plan name and price
+            const planNameEl = document.querySelector('.plan-name');
+            const planPriceEl = document.querySelector('.plan-price');
+            const payButton = document.querySelector('.pay-button');
+            if (planId && amount) {
+                planNameEl.textContent = `Premium Subscription - ${planId}`;
+                planPriceEl.textContent = `₹${amount}`;
+                payButton.innerHTML = `<i class="fas fa-lock"></i> Pay ₹${amount} Now`;
+            }
+
+
+            // Payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const cardPayment = document.querySelector('.card-payment');
+            const upiSection = document.querySelector('.upi-section');
+            const walletSection = document.querySelector('.wallet-section');
+            const walletOptions = document.querySelectorAll('.wallet-option');
+            
+            const processingOverlay = document.querySelector('.processing-overlay');
+            const successOverlay = document.querySelector('.success-overlay');
+            const errorOverlay = document.querySelector('.error-overlay');
+            const confirmOverlay = document.querySelector('.confirm-overlay');
+            const simpleSuccessOverlay = document.querySelector('.simple-success-overlay');
+            const paymentMethodUsed = document.getElementById('payment-method-used');
+            const errorMessageText = document.getElementById('error-message-text');
+            const simpleSuccessMessageText = document.getElementById('simple-success-message-text');
+            const okButtonError = document.querySelector('.ok-button-error');
+            const okButtonSimpleSuccess = document.querySelector('.ok-button-simple-success');
+            const confirmButtonYes = document.querySelector('.confirm-button-yes');
+            const confirmButtonNo = document.querySelector('.confirm-button-no');
+            
+            let selectedPaymentMethod = 'card';
+            let selectedWallet = '';
+
+            function showError(message) {
+                errorMessageText.textContent = message;
+                errorOverlay.classList.add('active');
+            }
+
+            okButtonError.addEventListener('click', () => {
+                errorOverlay.classList.remove('active');
+            });
+
+            function showSimpleSuccess(message) {
+                simpleSuccessMessageText.textContent = message;
+                simpleSuccessOverlay.classList.add('active');
+            }
+
+            okButtonSimpleSuccess.addEventListener('click', () => {
+                simpleSuccessOverlay.classList.remove('active');
+            });
+
+            function showConfirm() {
+                return new Promise((resolve) => {
+                    confirmOverlay.classList.add('active');
+                    confirmButtonYes.onclick = () => {
+                        confirmOverlay.classList.remove('active');
+                        resolve(true);
+                    };
+                    confirmButtonNo.onclick = () => {
+                        confirmOverlay.classList.remove('active');
+                        resolve(false);
+                    };
+                });
+            }
+            
+            // Payment method selection
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    method.classList.add('selected');
+                    
+                    selectedPaymentMethod = method.dataset.method;
+                    paymentMethodUsed.textContent = method.querySelector('.payment-name').textContent;
+                    
+                    // Show the appropriate payment section
+                    cardPayment.style.display = 'none';
+                    upiSection.style.display = 'none';
+                    walletSection.style.display = 'none';
+                    
+                    if (selectedPaymentMethod === 'card') {
+                        cardPayment.style.display = 'block';
+                    } else if (selectedPaymentMethod === 'upi') {
+                        upiSection.style.display = 'block';
+                    } else if (selectedPaymentMethod === 'wallet') {
+                        walletSection.style.display = 'block';
+                    }
+                });
+            });
+            
+            // Wallet selection
+            walletOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    walletOptions.forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedWallet = option.querySelector('.wallet-name').textContent;
+                    paymentMethodUsed.textContent = selectedWallet;
+                });
+            });
+            
+            // Pay button click
+            payButton.addEventListener('click', () => {
+                // Validate based on selected payment method
+                let isValid = true;
+                
+                if (selectedPaymentMethod === 'card') {
+                    const cardNumber = document.getElementById('card-number').value;
+                    const expiryDate = document.getElementById('expiry-date').value;
+                    const cvv = document.getElementById('cvv').value;
+                    const name = document.getElementById('name').value;
+                    
+                    if (!cardNumber || !expiryDate || !cvv || !name) {
+                        showError('Please fill in all card details');
+                        isValid = false;
+                    }
+                } else if (selectedPaymentMethod === 'upi') {
+                    const upiId = document.getElementById('upi-id').value;
+                    
+                    if (!upiId || !upiId.includes('@')) {
+                        showError('Please enter a valid UPI ID');
+                        isValid = false;
+                    }
+                } else if (selectedPaymentMethod === 'wallet') {
+                    if (!selectedWallet) {
+                        showError('Please select a wallet');
+                        isValid = false;
+                    }
+                }
+                
+                if (!isValid) return;
+                
+                // Show processing overlay
+                processingOverlay.classList.add('active');
+                
+                // Simulate payment processing
+                setTimeout(async () => {
+                    try {
+                        const response = await fetch('/payment/success', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({ planId: planId })
+                        });
+
+                        if (response.ok) {
+                            processingOverlay.classList.remove('active');
+                            successOverlay.classList.add('active');
+                        } else {
+                            throw new Error('Payment failed');
+                        }
+                    } catch (error) {
+                        console.error('Payment error:', error);
+                        processingOverlay.classList.remove('active');
+                        showError('An error occurred during payment. Please try again.');
+                    }
+                }, 3000);
+            });
+            
+            // OK button click
+            const okButton = document.querySelector('.ok-button');
+            okButton.addEventListener('click', () => {
+                window.location.href = '/packages';
+            });
+            
+            // Close button
+            const closeBtn = document.querySelector('.close-btn');
+            closeBtn.addEventListener('click', async () => {
+                const confirmed = await showConfirm();
+                if (confirmed) {
+                    window.location.href = '/packages';
+                }
+            });
+            
+            // Format card number input
+            const cardNumberInput = document.getElementById('card-number');
+            cardNumberInput.addEventListener('input', function(e) {
+                // Remove non-digit characters
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Add spaces after every 4 digits
+                value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                
+                // Update input value
+                e.target.value = value;
+            });
+            
+            // Format expiry date input
+            const expiryInput = document.getElementById('expiry-date');
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length > 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                
+                e.target.value = value;
+            });
+            
+            // Verify UPI button
+            const verifyUpiBtn = document.querySelector('.verify-upi');
+            verifyUpiBtn.addEventListener('click', () => {
+                const upiId = document.getElementById('upi-id').value;
+                if (!upiId) {
+                    showError('Please enter your UPI ID');
+                } else if (!upiId.includes('@')) {
+                    showError('Please enter a valid UPI ID (e.g. name@upi)');
+                } else {
+                    showSimpleSuccess(`UPI ID ${upiId} is valid. You can now proceed with the payment.`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
