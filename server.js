@@ -159,7 +159,7 @@ app.set('trust proxy', 1);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, "public")));
 app.set('view engine', 'ejs');
-app.set("views", path.join(__dirname, "./views"));
+app.set("views", path.join(__dirname, "views"));
 
 
 
