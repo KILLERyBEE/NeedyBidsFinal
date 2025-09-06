@@ -159,10 +159,7 @@ app.set('trust proxy', 1);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, "public")));
 app.set('view engine', 'ejs');
-app.set("views", path.join(process.cwd(), "views"));
-console.log("process.cwd() =>", process.cwd());
-console.log("__dirname =>", __dirname);
-console.log("views path =>", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "../views"));
 
 
 
