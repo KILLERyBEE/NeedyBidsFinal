@@ -160,8 +160,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, "public")));
 app.set('view engine', 'ejs');
 app.set("views", path.join(__dirname, "../views"));
-app.use(express.static(path.join(__dirname, "../public")));
-
+console.log("Views path =>", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "views"));
 
 
 
